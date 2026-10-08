@@ -21,6 +21,16 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+### Fixed
+
+### Removed
+
+## [0.0.6] - 2026-10-08
+
+### Added
+
+### Changed
+
 - `foundry-create.yml` grants "Foundry User" on the Foundry resource
   instead of the project. Existing project-scope role assignments are not
   removed; delete them with `az role assignment delete`.
