@@ -8,9 +8,10 @@ semantics**: PATCH for in-place tweaks and docs, MINOR for new resources or
 workflows, MAJOR for anything that destroys, recreates, or renames an existing
 resource.
 
-Add entries under `[Unreleased]` as you work. To release, bump `VERSION`,
-rename `[Unreleased]` to `[<VERSION>] - <date>`, add an empty `[Unreleased]`
-block above it, commit, then push the tag `v<VERSION>`.
+Add entries under `[Unreleased]` as you work. Do not edit the version headings
+by hand: `make release-<level>` renames `[Unreleased]` to the new version and
+re-seeds an empty `[Unreleased]` block above it. `make release-check` prints
+the bump policy against the current `VERSION`.
 
 `[Unreleased]` is for *changes since the last release only*.
 
@@ -26,12 +27,16 @@ block above it, commit, then push the tag `v<VERSION>`.
   through `azure-iac` `rg-destroy.yml`. Requires `confirm: Yes`.
 - `release.yml` workflow: on a `v*.*.*` tag push, checks the tag against
   `VERSION` and `CHANGELOG.md`, lints, and publishes a GitHub Release.
-- `VERSION` file.
+- `VERSION` file and a `Makefile` with the `version` and `release-*`
+  targets.
 
 ### Changed
 
 - `scripts/initvars.sh` manages the `TF_VAR_WORKLOAD` and `TF_VAR_OWNER`
   variables.
+- `sonar-project.properties` scans `.github` and `scripts` instead of the
+  missing `src`.
+- `README.md` documents the workflows, prerequisites and configuration.
 
 ### Fixed
 

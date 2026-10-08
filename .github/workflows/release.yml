@@ -69,8 +69,9 @@ jobs:
 
           if [ "${expected}" != "${RELEASE_TAG}" ]; then
             msg="::error::Ref ${RELEASE_TAG} does not match VERSION "
-            msg+="(${expected}). If dispatching by hand, dispatch from the "
-            msg+="tag ref, not a branch."
+            msg+="(${expected}). Cut releases with 'make release-<level>'; "
+            msg+="if dispatching by hand, dispatch from the tag ref, not a "
+            msg+="branch."
             echo "${msg}"
             exit 1
           fi
