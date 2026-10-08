@@ -149,14 +149,15 @@ jobs:
             --location "$LOCATION" \
             -o none
 
-      - name: Grant the user access to the Foundry project
+      - name: Grant the user access to the Foundry resource
         env:
           USER_OBJ_ID: ${{ vars.USER_OBJ_ID }}
           SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          ROLE: Azure AI User
+          # "Foundry User" (formerly "Azure AI User"); the ID survives renames.
+          ROLE: 53ca6127-db72-4b80-b1b0-d745d6d5456d
         run: |
           echo "=============================================================="
-          echo " STEP: Grant the user access to ${FOUNDRY_PROJECT}"
+          echo " STEP: Grant the user access to ${FOUNDRY_RESOURCE}"
           echo "=============================================================="
           set -euo pipefail
           if [ -z "$USER_OBJ_ID" ]; then
@@ -166,14 +167,14 @@ jobs:
           scope="/subscriptions/${SUBSCRIPTION_ID}"
           scope+="/resourceGroups/${RESOURCE_GROUP}"
           scope+="/providers/Microsoft.CognitiveServices"
-          scope+="/accounts/${FOUNDRY_RESOURCE}/projects/${FOUNDRY_PROJECT}"
+          scope+="/accounts/${FOUNDRY_RESOURCE}"
           existing="$(az role assignment list \
-            --assignee "$USER_OBJ_ID" \
+            --assignee-object-id "$USER_OBJ_ID" \
             --role "$ROLE" \
             --scope "$scope" \
             --query 'length(@)' -o tsv)"
           if [ "$existing" != "0" ]; then
-            echo "Role '${ROLE}' already assigned; skipping."
+            echo "Role already assigned; skipping."
             exit 0
           fi
           az role assignment create \

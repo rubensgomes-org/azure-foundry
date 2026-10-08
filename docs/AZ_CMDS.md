@@ -16,16 +16,16 @@ az cognitiveservices account list-kinds
 az account list-locations
 ```
 
-- grant the user access to the Foundry project
+- grant the user access to the Foundry resource
 
 ```bash
 scope="/subscriptions/${AZURE_SUBSCRIPTION_ID}"
 scope+="/resourceGroups/${RESOURCE_GROUP}"
 scope+="/providers/Microsoft.CognitiveServices"
-scope+="/accounts/${FOUNDRY_RESOURCE}/projects/${FOUNDRY_PROJECT}"
+scope+="/accounts/${FOUNDRY_RESOURCE}"
 
 az role assignment create \
-  --role "Azure AI User" \
+  --role "Foundry User" \
   --assignee-object-id "${USER_OBJ_ID}" \
   --assignee-principal-type User \
   --scope "${scope}"

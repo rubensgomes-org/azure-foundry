@@ -21,7 +21,15 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+- `foundry-create.yml` grants "Foundry User" on the Foundry resource
+  instead of the project. Existing project-scope role assignments are not
+  removed; delete them with `az role assignment delete`.
+- `docs/AZ_CMDS.md` grant example uses "Foundry User" at resource scope.
+
 ### Fixed
+
+- `foundry-create.yml` failed with "Role 'Azure AI User' doesn't exist";
+  it now grants "Foundry User" by role ID.
 
 ### Removed
 
