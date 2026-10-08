@@ -19,6 +19,16 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.0.2] - 2026-10-08
+
+### Added
+
 - `foundry-create.yml` grants the `USER_OBJ_ID` user the "Cognitive Services
   OpenAI User" role on the Foundry project.
 - `scripts/initvars.sh` manages the `USER_OBJ_ID` variable.
