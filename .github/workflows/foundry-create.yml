@@ -24,10 +24,6 @@ on:
         options:
           - dev
           - lab
-      foundry_resource:
-        description: 'Foundry resource name. Default: aif-<workload>-<env>.'
-        required: false
-        type: string
       project_name:
         description: 'Foundry project name. Default: proj-<workload>-<env>.'
         required: false
@@ -53,7 +49,6 @@ jobs:
         env:
           WORKLOAD: ${{ vars.TF_VAR_workload || 'rgomes' }}
           ENV_NAME: ${{ inputs.environment_name }}
-          FOUNDRY_RESOURCE_INPUT: ${{ inputs.foundry_resource }}
           PROJECT_INPUT: ${{ inputs.project_name }}
         run: |
           echo "=============================================================="
@@ -61,8 +56,7 @@ jobs:
           echo "=============================================================="
           set -euo pipefail
           name_pattern='^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$'
-          default_resource="aif-${WORKLOAD}-${ENV_NAME}"
-          foundry_resource="${FOUNDRY_RESOURCE_INPUT:-${default_resource}}"
+          foundry_resource="aif-${WORKLOAD}-${ENV_NAME}"
           project="${PROJECT_INPUT:-proj-${WORKLOAD}-${ENV_NAME}}"
           for name in "$foundry_resource" "$project"; do
             if ! printf '%s' "$name" | grep -qE "$name_pattern"; then

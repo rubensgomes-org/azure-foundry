@@ -36,8 +36,8 @@ tools. For details on usage, limits, and review practices, please see the
 
 Run the `foundry-create` workflow, choosing the environment (`dev` or `lab`).
 Names default to `rg-<workload>ai-<env>`, `aif-<workload>-<env>` (account and
-custom domain) and `proj-<workload>-<env>`. The account and project names can
-be overridden; the account name must be globally unique.
+custom domain) and `proj-<workload>-<env>`. Only the project name can be
+overridden; the account name must be globally unique.
 
 ## Uninstall
 
