@@ -153,7 +153,7 @@ jobs:
         env:
           USER_OBJ_ID: ${{ vars.USER_OBJ_ID }}
           SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          ROLE: Cognitive Services OpenAI User
+          ROLE: Azure AI User
         run: |
           echo "=============================================================="
           echo " STEP: Grant the user access to ${FOUNDRY_PROJECT}"

@@ -25,7 +25,7 @@ scope+="/providers/Microsoft.CognitiveServices"
 scope+="/accounts/${FOUNDRY_RESOURCE}/projects/${FOUNDRY_PROJECT}"
 
 az role assignment create \
-  --role "Cognitive Services OpenAI User" \
+  --role "Azure AI User" \
   --assignee-object-id "${USER_OBJ_ID}" \
   --assignee-principal-type User \
   --scope "${scope}"

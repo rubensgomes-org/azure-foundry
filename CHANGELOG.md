@@ -21,6 +21,9 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+- `foundry-create.yml` grants the "Azure AI User" role instead of
+  "Cognitive Services OpenAI User".
+
 ### Fixed
 
 ### Removed
