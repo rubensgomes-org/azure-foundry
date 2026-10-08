@@ -3,8 +3,9 @@
 #
 # Creates (if needed) the "ai" resource group by calling the reusable RG
 # Create workflow in the Terraform IaC `azure-iac` repo, then creates (if
-# needed) an Azure AI Foundry account and project in it, and verifies both
-# are provisioned. Endpoints and keys are never printed.
+# needed) an Azure AI Foundry resource and project in it, grants the user
+# access to the project, and verifies both are provisioned. Endpoints and
+# keys are never printed.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please
@@ -23,8 +24,8 @@ on:
         options:
           - dev
           - lab
-      account_name:
-        description: 'Foundry account name. Default: aif-<workload>-<env>.'
+      foundry_resource:
+        description: 'Foundry resource name. Default: aif-<workload>-<env>.'
         required: false
         type: string
       project_name:
@@ -44,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       resource_group: ${{ steps.resolve.outputs.resource_group }}
-      account_name: ${{ steps.resolve.outputs.account_name }}
+      foundry_resource: ${{ steps.resolve.outputs.foundry_resource }}
       project_name: ${{ steps.resolve.outputs.project_name }}
     steps:
       # Naming convention for the RG is owned by azure-iac rg-create.yml.
@@ -52,7 +53,7 @@ jobs:
         env:
           WORKLOAD: ${{ vars.TF_VAR_workload || 'rgomes' }}
           ENV_NAME: ${{ inputs.environment_name }}
-          ACCOUNT_INPUT: ${{ inputs.account_name }}
+          FOUNDRY_RESOURCE_INPUT: ${{ inputs.foundry_resource }}
           PROJECT_INPUT: ${{ inputs.project_name }}
         run: |
           echo "=============================================================="
@@ -60,9 +61,10 @@ jobs:
           echo "=============================================================="
           set -euo pipefail
           name_pattern='^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$'
-          account="${ACCOUNT_INPUT:-aif-${WORKLOAD}-${ENV_NAME}}"
+          default_resource="aif-${WORKLOAD}-${ENV_NAME}"
+          foundry_resource="${FOUNDRY_RESOURCE_INPUT:-${default_resource}}"
           project="${PROJECT_INPUT:-proj-${WORKLOAD}-${ENV_NAME}}"
-          for name in "$account" "$project"; do
+          for name in "$foundry_resource" "$project"; do
             if ! printf '%s' "$name" | grep -qE "$name_pattern"; then
               echo "Invalid name '${name}': use 2-64 lowercase" \
                 "alphanumerics or hyphens, starting and ending" \
@@ -72,12 +74,12 @@ jobs:
           done
           {
             echo "resource_group=rg-${WORKLOAD}ai-${ENV_NAME}"
-            echo "account_name=${account}"
+            echo "foundry_resource=${foundry_resource}"
             echo "project_name=${project}"
           } >> "$GITHUB_OUTPUT"
-          echo "Resource group: rg-${WORKLOAD}ai-${ENV_NAME}"
-          echo "Account:        ${account}"
-          echo "Project:        ${project}"
+          echo "Resource group:   rg-${WORKLOAD}ai-${ENV_NAME}"
+          echo "Foundry resource: ${foundry_resource}"
+          echo "Project:          ${project}"
 
   rg-create:
     uses: rubensgomes-org/azure-iac/.github/workflows/rg-create.yml@v0
@@ -93,9 +95,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RESOURCE_GROUP: ${{ needs.resolve-names.outputs.resource_group }}
-      ACCOUNT_NAME: ${{ needs.resolve-names.outputs.account_name }}
-      PROJECT_NAME: ${{ needs.resolve-names.outputs.project_name }}
-      LOCATION: ${{ vars.TF_VAR_LOCATION }}
+      FOUNDRY_RESOURCE: ${{ needs.resolve-names.outputs.foundry_resource }}
+      FOUNDRY_PROJECT: ${{ needs.resolve-names.outputs.project_name }}
+      LOCATION: centralus
+      SKU: S0
     steps:
       - name: Sign in to Azure
         uses: rubensgomes-org/azure-workflows/.github/actions/azure-login@v0
@@ -105,26 +108,27 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Create the Foundry account
+      - name: Create the Foundry resource
         run: |
           echo "=============================================================="
-          echo " STEP: Create the Foundry account ${ACCOUNT_NAME}"
+          echo " STEP: Create the Foundry resource ${FOUNDRY_RESOURCE}"
           echo "=============================================================="
           set -euo pipefail
           if az cognitiveservices account show \
-              --name "$ACCOUNT_NAME" \
+              --name "$FOUNDRY_RESOURCE" \
               --resource-group "$RESOURCE_GROUP" \
               -o none 2>/dev/null; then
-            echo "Account '${ACCOUNT_NAME}' already exists; skipping."
+            echo "Foundry resource '${FOUNDRY_RESOURCE}' already exists;" \
+              "skipping."
             exit 0
           fi
           az cognitiveservices account create \
-            --name "$ACCOUNT_NAME" \
+            --name "$FOUNDRY_RESOURCE" \
             --resource-group "$RESOURCE_GROUP" \
             --kind AIServices \
-            --sku S0 \
+            --sku "$SKU" \
             --location "$LOCATION" \
-            --custom-domain "$ACCOUNT_NAME" \
+            --custom-domain "$FOUNDRY_RESOURCE" \
             --assign-identity \
             --allow-project-management true \
             --yes \
@@ -133,22 +137,56 @@ jobs:
       - name: Create the Foundry project
         run: |
           echo "=============================================================="
-          echo " STEP: Create the Foundry project ${PROJECT_NAME}"
+          echo " STEP: Create the Foundry project ${FOUNDRY_PROJECT}"
           echo "=============================================================="
           set -euo pipefail
           if az cognitiveservices account project show \
-              --name "$ACCOUNT_NAME" \
-              --project-name "$PROJECT_NAME" \
+              --name "$FOUNDRY_RESOURCE" \
+              --project-name "$FOUNDRY_PROJECT" \
               --resource-group "$RESOURCE_GROUP" \
               -o none 2>/dev/null; then
-            echo "Project '${PROJECT_NAME}' already exists; skipping."
+            echo "Project '${FOUNDRY_PROJECT}' already exists; skipping."
             exit 0
           fi
           az cognitiveservices account project create \
-            --name "$ACCOUNT_NAME" \
-            --project-name "$PROJECT_NAME" \
+            --name "$FOUNDRY_RESOURCE" \
+            --project-name "$FOUNDRY_PROJECT" \
             --resource-group "$RESOURCE_GROUP" \
             --location "$LOCATION" \
+            -o none
+
+      - name: Grant the user access to the Foundry project
+        env:
+          USER_OBJ_ID: ${{ vars.USER_OBJ_ID }}
+          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          ROLE: Cognitive Services OpenAI User
+        run: |
+          echo "=============================================================="
+          echo " STEP: Grant the user access to ${FOUNDRY_PROJECT}"
+          echo "=============================================================="
+          set -euo pipefail
+          if [ -z "$USER_OBJ_ID" ]; then
+            echo "Actions variable USER_OBJ_ID is not set." >&2
+            exit 1
+          fi
+          scope="/subscriptions/${SUBSCRIPTION_ID}"
+          scope+="/resourceGroups/${RESOURCE_GROUP}"
+          scope+="/providers/Microsoft.CognitiveServices"
+          scope+="/accounts/${FOUNDRY_RESOURCE}/projects/${FOUNDRY_PROJECT}"
+          existing="$(az role assignment list \
+            --assignee "$USER_OBJ_ID" \
+            --role "$ROLE" \
+            --scope "$scope" \
+            --query 'length(@)' -o tsv)"
+          if [ "$existing" != "0" ]; then
+            echo "Role '${ROLE}' already assigned; skipping."
+            exit 0
+          fi
+          az role assignment create \
+            --role "$ROLE" \
+            --assignee-object-id "$USER_OBJ_ID" \
+            --assignee-principal-type User \
+            --scope "$scope" \
             -o none
 
       # --query keeps the endpoint out of the public log.
@@ -158,18 +196,18 @@ jobs:
           echo " STEP: Verify the deployment status"
           echo "=============================================================="
           set -euo pipefail
-          account_state="$(az cognitiveservices account show \
-            --name "$ACCOUNT_NAME" \
+          resource_state="$(az cognitiveservices account show \
+            --name "$FOUNDRY_RESOURCE" \
             --resource-group "$RESOURCE_GROUP" \
             --query properties.provisioningState -o tsv)"
           project_state="$(az cognitiveservices account project show \
-            --name "$ACCOUNT_NAME" \
-            --project-name "$PROJECT_NAME" \
+            --name "$FOUNDRY_RESOURCE" \
+            --project-name "$FOUNDRY_PROJECT" \
             --resource-group "$RESOURCE_GROUP" \
             --query properties.provisioningState -o tsv)"
-          echo "Account '${ACCOUNT_NAME}': ${account_state}"
-          echo "Project '${PROJECT_NAME}': ${project_state}"
-          if [ "$account_state" != "Succeeded" ] \
+          echo "Foundry resource '${FOUNDRY_RESOURCE}': ${resource_state}"
+          echo "Project '${FOUNDRY_PROJECT}': ${project_state}"
+          if [ "$resource_state" != "Succeeded" ] \
               || [ "$project_state" != "Succeeded" ]; then
             echo "Provisioning did not succeed." >&2
             exit 1

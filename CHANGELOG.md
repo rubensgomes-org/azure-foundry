@@ -19,7 +19,21 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `foundry-create.yml` grants the `USER_OBJ_ID` user the "Cognitive Services
+  OpenAI User" role on the Foundry project.
+- `scripts/initvars.sh` manages the `USER_OBJ_ID` variable.
+- `docs/AZ_CMDS.md` lists useful `az` commands.
+
 ### Changed
+
+- `foundry-create.yml` and `foundry-destroy.yml`: the `account_name` input is
+  renamed `foundry_resource`.
+- `foundry-create.yml` and `foundry-destroy.yml` create and purge the Foundry
+  resource and project in `centralus` instead of `TF_VAR_LOCATION`.
+- `foundry-create.yml` sets the Foundry resource SKU from a `SKU` constant
+  (`S0`).
+- `foundry-create.yml` and `foundry-destroy.yml` say "Foundry resource"
+  instead of "Foundry account" in step names, inputs and log messages.
 
 ### Fixed
 

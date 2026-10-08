@@ -2,7 +2,7 @@
 # foundry-destroy
 #
 # DESTRUCTIVE. Reverses foundry-create: deletes the Azure AI Foundry project
-# and account, purges the soft-deleted account, then destroys the "ai"
+# and resource, purges the soft-deleted resource, then destroys the "ai"
 # resource group by calling the reusable RG Destroy workflow in the Terraform
 # IaC `azure-iac` repo. Already-missing resources are skipped.
 #
@@ -23,8 +23,8 @@ on:
         options:
           - dev
           - lab
-      account_name:
-        description: 'Foundry account name. Default: aif-<workload>-<env>.'
+      foundry_resource:
+        description: 'Foundry resource name. Default: aif-<workload>-<env>.'
         required: false
         type: string
       project_name:
@@ -33,7 +33,7 @@ on:
         type: string
       confirm:
         description: >
-          DESTROYS THE FOUNDRY PROJECT, ACCOUNT AND "ai" RESOURCE GROUP.
+          DESTROYS THE FOUNDRY PROJECT, RESOURCE AND "ai" RESOURCE GROUP.
           Choose "Yes" to confirm.
         required: true
         type: choice
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       resource_group: ${{ steps.resolve.outputs.resource_group }}
-      account_name: ${{ steps.resolve.outputs.account_name }}
+      foundry_resource: ${{ steps.resolve.outputs.foundry_resource }}
       project_name: ${{ steps.resolve.outputs.project_name }}
     steps:
       # Naming convention for the RG is owned by azure-iac rg-create.yml.
@@ -62,7 +62,7 @@ jobs:
         env:
           WORKLOAD: ${{ vars.TF_VAR_workload || 'rgomes' }}
           ENV_NAME: ${{ inputs.environment_name }}
-          ACCOUNT_INPUT: ${{ inputs.account_name }}
+          FOUNDRY_RESOURCE_INPUT: ${{ inputs.foundry_resource }}
           PROJECT_INPUT: ${{ inputs.project_name }}
           CONFIRM: ${{ inputs.confirm }}
         run: |
@@ -75,9 +75,10 @@ jobs:
             exit 1
           fi
           name_pattern='^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$'
-          account="${ACCOUNT_INPUT:-aif-${WORKLOAD}-${ENV_NAME}}"
+          default_resource="aif-${WORKLOAD}-${ENV_NAME}"
+          foundry_resource="${FOUNDRY_RESOURCE_INPUT:-${default_resource}}"
           project="${PROJECT_INPUT:-proj-${WORKLOAD}-${ENV_NAME}}"
-          for name in "$account" "$project"; do
+          for name in "$foundry_resource" "$project"; do
             if ! printf '%s' "$name" | grep -qE "$name_pattern"; then
               echo "Invalid name '${name}': use 2-64 lowercase" \
                 "alphanumerics or hyphens, starting and ending" \
@@ -87,21 +88,21 @@ jobs:
           done
           {
             echo "resource_group=rg-${WORKLOAD}ai-${ENV_NAME}"
-            echo "account_name=${account}"
+            echo "foundry_resource=${foundry_resource}"
             echo "project_name=${project}"
           } >> "$GITHUB_OUTPUT"
-          echo "Resource group: rg-${WORKLOAD}ai-${ENV_NAME}"
-          echo "Account:        ${account}"
-          echo "Project:        ${project}"
+          echo "Resource group:   rg-${WORKLOAD}ai-${ENV_NAME}"
+          echo "Foundry resource: ${foundry_resource}"
+          echo "Project:          ${project}"
 
   foundry:
     needs: resolve-names
     runs-on: ubuntu-latest
     env:
       RESOURCE_GROUP: ${{ needs.resolve-names.outputs.resource_group }}
-      ACCOUNT_NAME: ${{ needs.resolve-names.outputs.account_name }}
-      PROJECT_NAME: ${{ needs.resolve-names.outputs.project_name }}
-      LOCATION: ${{ vars.TF_VAR_LOCATION }}
+      FOUNDRY_RESOURCE: ${{ needs.resolve-names.outputs.foundry_resource }}
+      FOUNDRY_PROJECT: ${{ needs.resolve-names.outputs.project_name }}
+      LOCATION: centralus
     steps:
       - name: Sign in to Azure
         uses: rubensgomes-org/azure-workflows/.github/actions/azure-login@v0
@@ -114,54 +115,55 @@ jobs:
       - name: Delete the Foundry project
         run: |
           echo "=============================================================="
-          echo " STEP: Delete the Foundry project ${PROJECT_NAME}"
+          echo " STEP: Delete the Foundry project ${FOUNDRY_PROJECT}"
           echo "=============================================================="
           set -euo pipefail
           if ! az cognitiveservices account project show \
-              --name "$ACCOUNT_NAME" \
-              --project-name "$PROJECT_NAME" \
+              --name "$FOUNDRY_RESOURCE" \
+              --project-name "$FOUNDRY_PROJECT" \
               --resource-group "$RESOURCE_GROUP" \
               -o none 2>/dev/null; then
-            echo "Project '${PROJECT_NAME}' does not exist; skipping."
+            echo "Project '${FOUNDRY_PROJECT}' does not exist; skipping."
             exit 0
           fi
           az cognitiveservices account project delete \
-            --name "$ACCOUNT_NAME" \
-            --project-name "$PROJECT_NAME" \
+            --name "$FOUNDRY_RESOURCE" \
+            --project-name "$FOUNDRY_PROJECT" \
             --resource-group "$RESOURCE_GROUP"
 
-      - name: Delete the Foundry account
+      - name: Delete the Foundry resource
         run: |
           echo "=============================================================="
-          echo " STEP: Delete the Foundry account ${ACCOUNT_NAME}"
+          echo " STEP: Delete the Foundry resource ${FOUNDRY_RESOURCE}"
           echo "=============================================================="
           set -euo pipefail
           if ! az cognitiveservices account show \
-              --name "$ACCOUNT_NAME" \
+              --name "$FOUNDRY_RESOURCE" \
               --resource-group "$RESOURCE_GROUP" \
               -o none 2>/dev/null; then
-            echo "Account '${ACCOUNT_NAME}' does not exist; skipping."
+            echo "Foundry resource '${FOUNDRY_RESOURCE}' does not exist;" \
+              "skipping."
             exit 0
           fi
           az cognitiveservices account delete \
-            --name "$ACCOUNT_NAME" \
+            --name "$FOUNDRY_RESOURCE" \
             --resource-group "$RESOURCE_GROUP"
 
-      # Soft-deleted accounts keep the custom domain reserved until purged.
-      - name: Purge the soft-deleted Foundry account
+      # Soft-deleted resources keep the custom domain reserved until purged.
+      - name: Purge the soft-deleted Foundry resource
         run: |
           echo "=============================================================="
-          echo " STEP: Purge the soft-deleted Foundry account ${ACCOUNT_NAME}"
+          echo " STEP: Purge the soft-deleted ${FOUNDRY_RESOURCE}"
           echo "=============================================================="
           set -euo pipefail
           deleted="$(az cognitiveservices account list-deleted \
-            --query "length([?name=='${ACCOUNT_NAME}'])" -o tsv)"
+            --query "length([?name=='${FOUNDRY_RESOURCE}'])" -o tsv)"
           if [ "$deleted" = "0" ]; then
-            echo "No soft-deleted account '${ACCOUNT_NAME}'; skipping."
+            echo "No soft-deleted resource '${FOUNDRY_RESOURCE}'; skipping."
             exit 0
           fi
           az cognitiveservices account purge \
-            --name "$ACCOUNT_NAME" \
+            --name "$FOUNDRY_RESOURCE" \
             --resource-group "$RESOURCE_GROUP" \
             --location "$LOCATION"
 
@@ -172,19 +174,19 @@ jobs:
           echo "=============================================================="
           set -euo pipefail
           if az cognitiveservices account show \
-              --name "$ACCOUNT_NAME" \
+              --name "$FOUNDRY_RESOURCE" \
               --resource-group "$RESOURCE_GROUP" \
               -o none 2>/dev/null; then
-            echo "FAIL: account '${ACCOUNT_NAME}' still exists." >&2
+            echo "FAIL: resource '${FOUNDRY_RESOURCE}' still exists." >&2
             exit 1
           fi
           deleted="$(az cognitiveservices account list-deleted \
-            --query "length([?name=='${ACCOUNT_NAME}'])" -o tsv)"
+            --query "length([?name=='${FOUNDRY_RESOURCE}'])" -o tsv)"
           if [ "$deleted" != "0" ]; then
-            echo "FAIL: account '${ACCOUNT_NAME}' is still soft-deleted." >&2
+            echo "FAIL: '${FOUNDRY_RESOURCE}' is still soft-deleted." >&2
             exit 1
           fi
-          echo "OK: account and project are gone."
+          echo "OK: resource and project are gone."
 
   rg-destroy:
     needs: foundry
