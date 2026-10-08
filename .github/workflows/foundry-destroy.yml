@@ -1,0 +1,198 @@
+# =============================================================================
+# foundry-destroy
+#
+# DESTRUCTIVE. Reverses foundry-create: deletes the Azure AI Foundry project
+# and account, purges the soft-deleted account, then destroys the "ai"
+# resource group by calling the reusable RG Destroy workflow in the Terraform
+# IaC `azure-iac` repo. Already-missing resources are skipped.
+#
+# This project's source code and documentation were generated with the
+# assistance of Artificial Intelligence (AI). For more information, please
+# refer to the `AI_DISCLAIMER.md` document located in the project's root
+# directory.
+# =============================================================================
+name: foundry-destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment_name:
+        description: 'Estate environment holding the Foundry resources.'
+        required: true
+        type: choice
+        options:
+          - dev
+          - lab
+      account_name:
+        description: 'Foundry account name. Default: aif-<workload>-<env>.'
+        required: false
+        type: string
+      project_name:
+        description: 'Foundry project name. Default: proj-<workload>-<env>.'
+        required: false
+        type: string
+      confirm:
+        description: >
+          DESTROYS THE FOUNDRY PROJECT, ACCOUNT AND "ai" RESOURCE GROUP.
+          Choose "Yes" to confirm.
+        required: true
+        type: choice
+        default: "No"
+        options:
+          - "No"
+          - "Yes"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: foundry-${{ inputs.environment_name }}
+  cancel-in-progress: false
+
+jobs:
+  resolve-names:
+    runs-on: ubuntu-latest
+    outputs:
+      resource_group: ${{ steps.resolve.outputs.resource_group }}
+      account_name: ${{ steps.resolve.outputs.account_name }}
+      project_name: ${{ steps.resolve.outputs.project_name }}
+    steps:
+      # Naming convention for the RG is owned by azure-iac rg-create.yml.
+      - id: resolve
+        env:
+          WORKLOAD: ${{ vars.TF_VAR_workload || 'rgomes' }}
+          ENV_NAME: ${{ inputs.environment_name }}
+          ACCOUNT_INPUT: ${{ inputs.account_name }}
+          PROJECT_INPUT: ${{ inputs.project_name }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          echo "=============================================================="
+          echo " STEP: Validate confirmation and resolve the resource names"
+          echo "=============================================================="
+          set -euo pipefail
+          if [ "$CONFIRM" != "Yes" ]; then
+            echo "Denied: confirm must be 'Yes'. Got: '${CONFIRM}'." >&2
+            exit 1
+          fi
+          name_pattern='^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$'
+          account="${ACCOUNT_INPUT:-aif-${WORKLOAD}-${ENV_NAME}}"
+          project="${PROJECT_INPUT:-proj-${WORKLOAD}-${ENV_NAME}}"
+          for name in "$account" "$project"; do
+            if ! printf '%s' "$name" | grep -qE "$name_pattern"; then
+              echo "Invalid name '${name}': use 2-64 lowercase" \
+                "alphanumerics or hyphens, starting and ending" \
+                "alphanumeric." >&2
+              exit 1
+            fi
+          done
+          {
+            echo "resource_group=rg-${WORKLOAD}ai-${ENV_NAME}"
+            echo "account_name=${account}"
+            echo "project_name=${project}"
+          } >> "$GITHUB_OUTPUT"
+          echo "Resource group: rg-${WORKLOAD}ai-${ENV_NAME}"
+          echo "Account:        ${account}"
+          echo "Project:        ${project}"
+
+  foundry:
+    needs: resolve-names
+    runs-on: ubuntu-latest
+    env:
+      RESOURCE_GROUP: ${{ needs.resolve-names.outputs.resource_group }}
+      ACCOUNT_NAME: ${{ needs.resolve-names.outputs.account_name }}
+      PROJECT_NAME: ${{ needs.resolve-names.outputs.project_name }}
+      LOCATION: ${{ vars.TF_VAR_LOCATION }}
+    steps:
+      - name: Sign in to Azure
+        uses: rubensgomes-org/azure-workflows/.github/actions/azure-login@v0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Delete the Foundry project
+        run: |
+          echo "=============================================================="
+          echo " STEP: Delete the Foundry project ${PROJECT_NAME}"
+          echo "=============================================================="
+          set -euo pipefail
+          if ! az cognitiveservices account project show \
+              --name "$ACCOUNT_NAME" \
+              --project-name "$PROJECT_NAME" \
+              --resource-group "$RESOURCE_GROUP" \
+              -o none 2>/dev/null; then
+            echo "Project '${PROJECT_NAME}' does not exist; skipping."
+            exit 0
+          fi
+          az cognitiveservices account project delete \
+            --name "$ACCOUNT_NAME" \
+            --project-name "$PROJECT_NAME" \
+            --resource-group "$RESOURCE_GROUP"
+
+      - name: Delete the Foundry account
+        run: |
+          echo "=============================================================="
+          echo " STEP: Delete the Foundry account ${ACCOUNT_NAME}"
+          echo "=============================================================="
+          set -euo pipefail
+          if ! az cognitiveservices account show \
+              --name "$ACCOUNT_NAME" \
+              --resource-group "$RESOURCE_GROUP" \
+              -o none 2>/dev/null; then
+            echo "Account '${ACCOUNT_NAME}' does not exist; skipping."
+            exit 0
+          fi
+          az cognitiveservices account delete \
+            --name "$ACCOUNT_NAME" \
+            --resource-group "$RESOURCE_GROUP"
+
+      # Soft-deleted accounts keep the custom domain reserved until purged.
+      - name: Purge the soft-deleted Foundry account
+        run: |
+          echo "=============================================================="
+          echo " STEP: Purge the soft-deleted Foundry account ${ACCOUNT_NAME}"
+          echo "=============================================================="
+          set -euo pipefail
+          deleted="$(az cognitiveservices account list-deleted \
+            --query "length([?name=='${ACCOUNT_NAME}'])" -o tsv)"
+          if [ "$deleted" = "0" ]; then
+            echo "No soft-deleted account '${ACCOUNT_NAME}'; skipping."
+            exit 0
+          fi
+          az cognitiveservices account purge \
+            --name "$ACCOUNT_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --location "$LOCATION"
+
+      - name: Verify the Foundry resources are gone
+        run: |
+          echo "=============================================================="
+          echo " STEP: Verify the Foundry resources are gone"
+          echo "=============================================================="
+          set -euo pipefail
+          if az cognitiveservices account show \
+              --name "$ACCOUNT_NAME" \
+              --resource-group "$RESOURCE_GROUP" \
+              -o none 2>/dev/null; then
+            echo "FAIL: account '${ACCOUNT_NAME}' still exists." >&2
+            exit 1
+          fi
+          deleted="$(az cognitiveservices account list-deleted \
+            --query "length([?name=='${ACCOUNT_NAME}'])" -o tsv)"
+          if [ "$deleted" != "0" ]; then
+            echo "FAIL: account '${ACCOUNT_NAME}' is still soft-deleted." >&2
+            exit 1
+          fi
+          echo "OK: account and project are gone."
+
+  rg-destroy:
+    needs: foundry
+    uses: rubensgomes-org/azure-iac/.github/workflows/rg-destroy.yml@v0
+    with:
+      environment_name: ${{ inputs.environment_name }}
+      purpose: ai
+      dry_run: false
+      confirm: ${{ inputs.confirm }}
+    secrets:
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
