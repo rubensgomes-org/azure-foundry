@@ -15,9 +15,8 @@ GitHub Actions workflows (`.github/workflows`):
 - `foundry-create`: creates the `ai` resource group (via `azure-iac`
   `rg-create`), an Azure AI Foundry account and a project, then verifies
   they are provisioned.
-- `foundry-destroy`: deletes the project and account, purges the
-  soft-deleted account, then destroys the `ai` resource group (via
-  `azure-iac` `rg-destroy`).
+- `foundry-destroy`: deletes the project and account, then purges the
+  soft-deleted account.
 - `release`: publishes a GitHub Release when a `v*.*.*` tag matching
   `VERSION` and `CHANGELOG.md` is pushed.
 

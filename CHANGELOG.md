@@ -25,6 +25,9 @@ the bump policy against the current `VERSION`.
 
 ### Removed
 
+- `foundry-destroy.yml` no longer destroys the `ai` resource group
+  (`azure-iac` `rg-destroy.yml` call removed).
+
 ## [0.0.2] - 2026-10-08
 
 ### Added

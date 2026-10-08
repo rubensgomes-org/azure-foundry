@@ -2,16 +2,15 @@
 # foundry-destroy
 #
 # DESTRUCTIVE. Reverses foundry-create: deletes the Azure AI Foundry project
-# and resource, purges the soft-deleted resource, then destroys the "ai"
-# resource group by calling the reusable RG Destroy workflow in the Terraform
-# IaC `azure-iac` repo. Already-missing resources are skipped.
+# and resource, then purges the soft-deleted resource. The "ai" resource
+# group is kept. Already-missing resources are skipped.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please
 # refer to the `AI_DISCLAIMER.md` document located in the project's root
 # directory.
 # =============================================================================
-name: foundry-destroy
+name: Destroy Foundry Project/Resource
 
 on:
   workflow_dispatch:
@@ -33,7 +32,7 @@ on:
         type: string
       confirm:
         description: >
-          DESTROYS THE FOUNDRY PROJECT, RESOURCE AND "ai" RESOURCE GROUP.
+          DESTROYS THE FOUNDRY PROJECT AND RESOURCE.
           Choose "Yes" to confirm.
         required: true
         type: choice
@@ -187,14 +186,3 @@ jobs:
             exit 1
           fi
           echo "OK: resource and project are gone."
-
-  rg-destroy:
-    needs: foundry
-    uses: rubensgomes-org/azure-iac/.github/workflows/rg-destroy.yml@v0
-    with:
-      environment_name: ${{ inputs.environment_name }}
-      purpose: ai
-      dry_run: false
-      confirm: ${{ inputs.confirm }}
-    secrets:
-      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

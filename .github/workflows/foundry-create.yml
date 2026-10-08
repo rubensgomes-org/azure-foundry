@@ -12,7 +12,7 @@
 # refer to the `AI_DISCLAIMER.md` document located in the project's root
 # directory.
 # =============================================================================
-name: foundry-create
+name: Create Foundry Resource/Project
 
 on:
   workflow_dispatch:
