@@ -25,6 +25,16 @@ the bump policy against the current `VERSION`.
 
 ### Removed
 
+## [0.0.4] - 2026-10-08
+
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
 - `foundry_resource` workflow input; the name is always
   `aif-<workload>-<env>`.
 
