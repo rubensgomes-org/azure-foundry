@@ -19,6 +19,16 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.1.0] - 2026-10-08
+
+### Added
+
 - `foundry-create.yml` workflow: creates the `ai` resource group through
   `azure-iac` `rg-create.yml`, then the Foundry account and project, and
   verifies both are provisioned.
