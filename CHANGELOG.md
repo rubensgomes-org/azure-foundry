@@ -21,6 +21,16 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+### Fixed
+
+### Removed
+
+## [0.0.9] - 2026-10-13
+
+### Added
+
+### Changed
+
 - `aif-create.yml` and `aif-destroy.yml` call the `azure-iac` reusable
   `aif-create.yml` / `aif-destroy.yml@v0` workflows, which manage the
   Foundry resource and project with Terraform. The `project_name` input is
