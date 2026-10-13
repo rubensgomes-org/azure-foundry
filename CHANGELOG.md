@@ -21,6 +21,16 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+### Fixed
+
+### Removed
+
+## [0.0.8] - 2026-10-13
+
+### Added
+
+### Changed
+
 - Renamed the `foundry-create`, `foundry-destroy`, `foundry-model-deploy`
   and `foundry-model-delete` workflows to `aif-create`, `aif-destroy`,
   `aif-model-deploy` and `aif-model-delete`.
