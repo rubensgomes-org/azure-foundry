@@ -19,6 +19,10 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `foundry-model-deploy.yml` deploys a model on the Foundry resource
+  (default `gpt-5-nano` `2025-08-07`, `OpenAI`, `GlobalStandard`).
+- `foundry-model-delete.yml` deletes a model deployment.
+
 ### Changed
 
 ### Fixed

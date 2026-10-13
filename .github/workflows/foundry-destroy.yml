@@ -10,7 +10,7 @@
 # refer to the `AI_DISCLAIMER.md` document located in the project's root
 # directory.
 # =============================================================================
-name: Destroy Foundry Project/Resource
+name: Foundry Destroy Project and Resource
 
 on:
   workflow_dispatch:

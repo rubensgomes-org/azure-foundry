@@ -1,0 +1,137 @@
+# =============================================================================
+# foundry-model-delete
+#
+# DESTRUCTIVE. Reverses foundry-model-deploy: deletes a model deployment
+# from the Azure AI Foundry resource. The resource and its projects are
+# kept. An already-missing deployment is skipped.
+#
+# This project's source code and documentation were generated with the
+# assistance of Artificial Intelligence (AI). For more information, please
+# refer to the `AI_DISCLAIMER.md` document located in the project's root
+# directory.
+# =============================================================================
+name: Foundry Delete Model
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment_name:
+        description: 'Estate environment holding the Foundry resource.'
+        required: true
+        type: choice
+        options:
+          - dev
+          - lab
+      deployment_name:
+        description: 'Deployment name to delete.'
+        required: true
+        type: string
+        default: gpt-5-nano
+      confirm:
+        description: >
+          DELETES THE MODEL DEPLOYMENT.
+          Choose "Yes" to confirm.
+        required: true
+        type: choice
+        default: "No"
+        options:
+          - "No"
+          - "Yes"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: foundry-${{ inputs.environment_name }}
+  cancel-in-progress: false
+
+jobs:
+  resolve-names:
+    runs-on: ubuntu-latest
+    outputs:
+      resource_group: ${{ steps.resolve.outputs.resource_group }}
+      foundry_resource: ${{ steps.resolve.outputs.foundry_resource }}
+      deployment_name: ${{ steps.resolve.outputs.deployment_name }}
+    steps:
+      # Naming convention for the RG is owned by azure-iac rg-create.yml.
+      - id: resolve
+        env:
+          WORKLOAD: ${{ vars.TF_VAR_workload || 'rgomes' }}
+          ENV_NAME: ${{ inputs.environment_name }}
+          DEPLOYMENT_NAME: ${{ inputs.deployment_name }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          echo "=============================================================="
+          echo " STEP: Validate confirmation and resolve the resource names"
+          echo "=============================================================="
+          set -euo pipefail
+          if [ "$CONFIRM" != "Yes" ]; then
+            echo "Denied: confirm must be 'Yes'. Got: '${CONFIRM}'." >&2
+            exit 1
+          fi
+          deployment_pattern='^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$'
+          if ! printf '%s' "$DEPLOYMENT_NAME" \
+              | grep -qE "$deployment_pattern"; then
+            echo "Invalid deployment name '${DEPLOYMENT_NAME}': use 1-64" \
+              "alphanumerics, '.', '_' or '-', starting alphanumeric." >&2
+            exit 1
+          fi
+          {
+            echo "resource_group=rg-${WORKLOAD}ai-${ENV_NAME}"
+            echo "foundry_resource=aif-${WORKLOAD}-${ENV_NAME}"
+            echo "deployment_name=${DEPLOYMENT_NAME}"
+          } >> "$GITHUB_OUTPUT"
+          echo "Resource group:   rg-${WORKLOAD}ai-${ENV_NAME}"
+          echo "Foundry resource: aif-${WORKLOAD}-${ENV_NAME}"
+          echo "Deployment:       ${DEPLOYMENT_NAME}"
+
+  delete:
+    needs: resolve-names
+    runs-on: ubuntu-latest
+    env:
+      RESOURCE_GROUP: ${{ needs.resolve-names.outputs.resource_group }}
+      FOUNDRY_RESOURCE: ${{ needs.resolve-names.outputs.foundry_resource }}
+      DEPLOYMENT_NAME: ${{ needs.resolve-names.outputs.deployment_name }}
+    steps:
+      - name: Sign in to Azure
+        uses: rubensgomes-org/azure-workflows/.github/actions/azure-login@v0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Delete the model deployment
+        run: |
+          echo "=============================================================="
+          echo " STEP: Delete the deployment ${DEPLOYMENT_NAME}"
+          echo "=============================================================="
+          set -euo pipefail
+          if ! az cognitiveservices account deployment show \
+              --name "$FOUNDRY_RESOURCE" \
+              --resource-group "$RESOURCE_GROUP" \
+              --deployment-name "$DEPLOYMENT_NAME" \
+              -o none 2>/dev/null; then
+            echo "Deployment '${DEPLOYMENT_NAME}' does not exist; skipping."
+            exit 0
+          fi
+          az cognitiveservices account deployment delete \
+            --name "$FOUNDRY_RESOURCE" \
+            --resource-group "$RESOURCE_GROUP" \
+            --deployment-name "$DEPLOYMENT_NAME"
+
+      - name: Verify the deployment is gone
+        run: |
+          echo "=============================================================="
+          echo " STEP: Verify the deployment is gone"
+          echo "=============================================================="
+          set -euo pipefail
+          if az cognitiveservices account deployment show \
+              --name "$FOUNDRY_RESOURCE" \
+              --resource-group "$RESOURCE_GROUP" \
+              --deployment-name "$DEPLOYMENT_NAME" \
+              -o none 2>/dev/null; then
+            echo "FAIL: deployment '${DEPLOYMENT_NAME}' still exists." >&2
+            exit 1
+          fi
+          echo "OK: deployment '${DEPLOYMENT_NAME}' is gone."
