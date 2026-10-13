@@ -1,9 +1,10 @@
 # =============================================================================
 # aif-destroy
 #
-# DESTRUCTIVE. Reverses aif-create: deletes the Azure AI Foundry project
-# and resource, then purges the soft-deleted resource. The "ai" resource
-# group is kept. Already-missing resources are skipped.
+# DESTRUCTIVE. Reverses aif-create by calling the reusable AIF Destroy
+# workflow in the Terraform IaC `azure-iac` repo: deletes the Azure AI
+# Foundry project and resource, with every model deployment on it, then
+# purges the soft-deleted resource. The "ai" resource group is kept.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please
@@ -22,10 +23,6 @@ on:
         options:
           - dev
           - lab
-      project_name:
-        description: 'Foundry project name. Default: proj-<workload>-<env>.'
-        required: false
-        type: string
       confirm:
         description: >
           DESTROYS THE FOUNDRY PROJECT AND RESOURCE.
@@ -45,138 +42,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  resolve-names:
-    runs-on: ubuntu-latest
-    outputs:
-      resource_group: ${{ steps.resolve.outputs.resource_group }}
-      foundry_resource: ${{ steps.resolve.outputs.foundry_resource }}
-      project_name: ${{ steps.resolve.outputs.project_name }}
-    steps:
-      # Naming convention for the RG is owned by azure-iac rg-create.yml.
-      - id: resolve
-        env:
-          WORKLOAD: ${{ vars.TF_VAR_workload || 'rgomes' }}
-          ENV_NAME: ${{ inputs.environment_name }}
-          PROJECT_INPUT: ${{ inputs.project_name }}
-          CONFIRM: ${{ inputs.confirm }}
-        run: |
-          echo "=============================================================="
-          echo " STEP: Validate confirmation and resolve the resource names"
-          echo "=============================================================="
-          set -euo pipefail
-          if [ "$CONFIRM" != "Yes" ]; then
-            echo "Denied: confirm must be 'Yes'. Got: '${CONFIRM}'." >&2
-            exit 1
-          fi
-          name_pattern='^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$'
-          foundry_resource="aif-${WORKLOAD}-${ENV_NAME}"
-          project="${PROJECT_INPUT:-proj-${WORKLOAD}-${ENV_NAME}}"
-          for name in "$foundry_resource" "$project"; do
-            if ! printf '%s' "$name" | grep -qE "$name_pattern"; then
-              echo "Invalid name '${name}': use 2-64 lowercase" \
-                "alphanumerics or hyphens, starting and ending" \
-                "alphanumeric." >&2
-              exit 1
-            fi
-          done
-          {
-            echo "resource_group=rg-${WORKLOAD}ai-${ENV_NAME}"
-            echo "foundry_resource=${foundry_resource}"
-            echo "project_name=${project}"
-          } >> "$GITHUB_OUTPUT"
-          echo "Resource group:   rg-${WORKLOAD}ai-${ENV_NAME}"
-          echo "Foundry resource: ${foundry_resource}"
-          echo "Project:          ${project}"
-
-  foundry:
-    needs: resolve-names
-    runs-on: ubuntu-latest
-    env:
-      RESOURCE_GROUP: ${{ needs.resolve-names.outputs.resource_group }}
-      FOUNDRY_RESOURCE: ${{ needs.resolve-names.outputs.foundry_resource }}
-      FOUNDRY_PROJECT: ${{ needs.resolve-names.outputs.project_name }}
-      LOCATION: centralus
-    steps:
-      - name: Sign in to Azure
-        uses: rubensgomes-org/azure-workflows/.github/actions/azure-login@v0
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Delete the Foundry project
-        run: |
-          echo "=============================================================="
-          echo " STEP: Delete the Foundry project ${FOUNDRY_PROJECT}"
-          echo "=============================================================="
-          set -euo pipefail
-          if ! az cognitiveservices account project show \
-              --name "$FOUNDRY_RESOURCE" \
-              --project-name "$FOUNDRY_PROJECT" \
-              --resource-group "$RESOURCE_GROUP" \
-              -o none 2>/dev/null; then
-            echo "Project '${FOUNDRY_PROJECT}' does not exist; skipping."
-            exit 0
-          fi
-          az cognitiveservices account project delete \
-            --name "$FOUNDRY_RESOURCE" \
-            --project-name "$FOUNDRY_PROJECT" \
-            --resource-group "$RESOURCE_GROUP"
-
-      - name: Delete the Foundry resource
-        run: |
-          echo "=============================================================="
-          echo " STEP: Delete the Foundry resource ${FOUNDRY_RESOURCE}"
-          echo "=============================================================="
-          set -euo pipefail
-          if ! az cognitiveservices account show \
-              --name "$FOUNDRY_RESOURCE" \
-              --resource-group "$RESOURCE_GROUP" \
-              -o none 2>/dev/null; then
-            echo "Foundry resource '${FOUNDRY_RESOURCE}' does not exist;" \
-              "skipping."
-            exit 0
-          fi
-          az cognitiveservices account delete \
-            --name "$FOUNDRY_RESOURCE" \
-            --resource-group "$RESOURCE_GROUP"
-
-      # Soft-deleted resources keep the custom domain reserved until purged.
-      - name: Purge the soft-deleted Foundry resource
-        run: |
-          echo "=============================================================="
-          echo " STEP: Purge the soft-deleted ${FOUNDRY_RESOURCE}"
-          echo "=============================================================="
-          set -euo pipefail
-          deleted="$(az cognitiveservices account list-deleted \
-            --query "length([?name=='${FOUNDRY_RESOURCE}'])" -o tsv)"
-          if [ "$deleted" = "0" ]; then
-            echo "No soft-deleted resource '${FOUNDRY_RESOURCE}'; skipping."
-            exit 0
-          fi
-          az cognitiveservices account purge \
-            --name "$FOUNDRY_RESOURCE" \
-            --resource-group "$RESOURCE_GROUP" \
-            --location "$LOCATION"
-
-      - name: Verify the Foundry resources are gone
-        run: |
-          echo "=============================================================="
-          echo " STEP: Verify the Foundry resources are gone"
-          echo "=============================================================="
-          set -euo pipefail
-          if az cognitiveservices account show \
-              --name "$FOUNDRY_RESOURCE" \
-              --resource-group "$RESOURCE_GROUP" \
-              -o none 2>/dev/null; then
-            echo "FAIL: resource '${FOUNDRY_RESOURCE}' still exists." >&2
-            exit 1
-          fi
-          deleted="$(az cognitiveservices account list-deleted \
-            --query "length([?name=='${FOUNDRY_RESOURCE}'])" -o tsv)"
-          if [ "$deleted" != "0" ]; then
-            echo "FAIL: '${FOUNDRY_RESOURCE}' is still soft-deleted." >&2
-            exit 1
-          fi
-          echo "OK: resource and project are gone."
+  aif-destroy:
+    uses: rubensgomes-org/azure-iac/.github/workflows/aif-destroy.yml@v0
+    with:
+      environment_name: ${{ inputs.environment_name }}
+      confirm: ${{ inputs.confirm }}
+    secrets:
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

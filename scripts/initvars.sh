@@ -110,7 +110,6 @@ declare -Ar ACTION_VARIABLES=(
   [TF_VAR_OWNER]="${TF_VAR_owner:-}"
   [TF_VAR_STORAGE_ACCOUNT_ID]="${TF_VAR_storage_account_id:-}"
   [TF_VAR_WORKLOAD]="${TF_VAR_workload:-}"
-  [USER_OBJ_ID]="${USER_OBJ_ID:-}"
 )
 
 declare -ar ACTION_VARIABLE_ORDER=(
@@ -123,7 +122,6 @@ declare -ar ACTION_VARIABLE_ORDER=(
   TF_VAR_OWNER
   TF_VAR_STORAGE_ACCOUNT_ID
   TF_VAR_WORKLOAD
-  USER_OBJ_ID
 )
 
 # Variables this script used to manage and no longer does. The
@@ -133,6 +131,7 @@ declare -ar ACTION_VARIABLE_ORDER=(
 declare -ar RETIRED_ACTION_VARIABLES=(
   TF_VAR_APPS
   TF_VAR_TARGET_PORT
+  USER_OBJ_ID
 )
 
 declare -Ar REQUIRED_VARIABLE_SOURCES=(
@@ -149,7 +148,6 @@ declare -Ar REQUIRED_VARIABLE_SOURCES=(
   [TF_VAR_OWNER]="TF_VAR_owner"
   [TF_VAR_STORAGE_ACCOUNT_ID]="TF_VAR_storage_account_id"
   [TF_VAR_WORKLOAD]="TF_VAR_workload"
-  [USER_OBJ_ID]="USER_OBJ_ID"
 )
 
 

@@ -2,7 +2,20 @@
 
 This file contains some az cli commands used in this project.
 
-## 
+- get your current signed in user's object ID
+
+```bash
+az ad signed-in-user show --query id -o tsv
+```
+
+- create Terraform variable to be used for the "Foundry User"
+
+```bash
+# create the GitHub Actions variable in azure-iac
+gh variable set TF_VAR_FOUNDRY_USER_OBJECT_ID --body "<object-id>"
+# or for local `make apply-foundry` runs
+export TF_VAR_foundry_user_object_id="<object-id>"
+```
 
 - list different cognitive service account types
 
@@ -14,6 +27,19 @@ az cognitiveservices account list-kinds
 
 ```bash
 az account list-locations
+```
+
+-  list all the roles granted to the user
+
+```bash
+# USER_OBJ_ID is defined in the environment
+az role assignment list \
+  --assignee "${USER_OBJ_ID}" \
+  --all \
+  --include-inherited \
+  --include-groups \
+  --query "[].{role:roleDefinitionName, scope:scope}" \
+  -o table
 ```
 
 - grant the user access to the Foundry resource

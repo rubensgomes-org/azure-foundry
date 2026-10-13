@@ -21,9 +21,17 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+- `aif-create.yml` and `aif-destroy.yml` call the `azure-iac` reusable
+  `aif-create.yml` / `aif-destroy.yml@v0` workflows, which manage the
+  Foundry resource and project with Terraform. The `project_name` input is
+  removed.
+
 ### Fixed
 
 ### Removed
+
+- The `USER_OBJ_ID` Actions variable and the `aif-create` "Foundry User"
+  grant; `scripts/initvars.sh` deletes the variable as retired.
 
 ## [0.0.8] - 2026-10-13
 
