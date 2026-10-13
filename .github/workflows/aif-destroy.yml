@@ -1,7 +1,7 @@
 # =============================================================================
-# foundry-destroy
+# aif-destroy
 #
-# DESTRUCTIVE. Reverses foundry-create: deletes the Azure AI Foundry project
+# DESTRUCTIVE. Reverses aif-create: deletes the Azure AI Foundry project
 # and resource, then purges the soft-deleted resource. The "ai" resource
 # group is kept. Already-missing resources are skipped.
 #

@@ -1,8 +1,8 @@
 # =============================================================================
-# foundry-model-deploy
+# aif-model-deploy
 #
 # Deploys (if needed) a model on the Azure AI Foundry resource created by
-# foundry-create, then verifies the deployment is provisioned. Every project
+# aif-create, then verifies the deployment is provisioned. Every project
 # under the resource can use the deployment. Endpoints and keys are never
 # printed.
 #
@@ -146,7 +146,7 @@ jobs:
               --resource-group "$RESOURCE_GROUP" \
               -o none 2>/dev/null; then
             echo "Foundry resource '${FOUNDRY_RESOURCE}' does not exist;" \
-              "run foundry-create first." >&2
+              "run aif-create first." >&2
             exit 1
           fi
           if az cognitiveservices account deployment show \

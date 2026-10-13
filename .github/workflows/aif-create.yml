@@ -1,5 +1,5 @@
 # =============================================================================
-# foundry-create
+# aif-create
 #
 # Creates (if needed) the "ai" resource group by calling the reusable RG
 # Create workflow in the Terraform IaC `azure-iac` repo, then creates (if

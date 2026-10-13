@@ -1,7 +1,7 @@
 # =============================================================================
-# foundry-model-delete
+# aif-model-delete
 #
-# DESTRUCTIVE. Reverses foundry-model-deploy: deletes a model deployment
+# DESTRUCTIVE. Reverses aif-model-deploy: deletes a model deployment
 # from the Azure AI Foundry resource. The resource and its projects are
 # kept. An already-missing deployment is skipped.
 #

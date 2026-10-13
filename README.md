@@ -12,14 +12,14 @@
 
 GitHub Actions workflows (`.github/workflows`):
 
-- `foundry-create`: creates the `ai` resource group (via `azure-iac`
+- `aif-create`: creates the `ai` resource group (via `azure-iac`
   `rg-create`), an Azure AI Foundry account and a project, then verifies
   they are provisioned.
-- `foundry-destroy`: deletes the project and account, then purges the
+- `aif-destroy`: deletes the project and account, then purges the
   soft-deleted account.
-- `foundry-model-deploy`: deploys a model (default `gpt-5-nano`,
+- `aif-model-deploy`: deploys a model (default `gpt-5-nano`,
   `GlobalStandard`) on the Foundry account.
-- `foundry-model-delete`: deletes a model deployment.
+- `aif-model-delete`: deletes a model deployment.
 - `release`: publishes a GitHub Release when a `v*.*.*` tag matching
   `VERSION` and `CHANGELOG.md` is pushed.
 
@@ -37,20 +37,20 @@ tools. For details on usage, limits, and review practices, please see the
 
 ## Installation
 
-Run the `foundry-create` workflow, choosing the environment (`dev` or `lab`).
+Run the `aif-create` workflow, choosing the environment (`dev` or `lab`).
 Names default to `rg-<workload>ai-<env>`, `aif-<workload>-<env>` (account and
 custom domain) and `proj-<workload>-<env>`. Only the project name can be
 overridden; the account name must be globally unique.
 
-Then run the `foundry-model-deploy` workflow to deploy a model. The deployment
+Then run the `aif-model-deploy` workflow to deploy a model. The deployment
 name defaults to the model name.
 
 ## Uninstall
 
-To remove only a model, run the `foundry-model-delete` workflow with the
+To remove only a model, run the `aif-model-delete` workflow with the
 deployment name and `confirm` set to `Yes`.
 
-Run the `foundry-destroy` workflow with the same environment and names, and
+Run the `aif-destroy` workflow with the same environment and names, and
 `confirm` set to `Yes`.
 
 ## Configuration
