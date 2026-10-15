@@ -19,6 +19,16 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.0.11] - 2026-10-15
+
+### Added
+
 - `azure_foundry` Python package (Poetry), with `config.yaml` loading and
   logging setup in `azure_foundry.config`.
 - `HelloAgent`, a basic Foundry agent; run it with
