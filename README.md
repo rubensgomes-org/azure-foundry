@@ -20,6 +20,11 @@ GitHub Actions workflows (`.github/workflows`):
 - `aif-model-deploy`: deploys a model (default `gpt-5-nano`,
   `GlobalStandard`) on the Foundry account.
 - `aif-model-delete`: deletes a model deployment.
+- `foundry-create-all`: creates the Container Apps, their dependencies and
+  the Foundry account and project with the `azure-iac` workflow of the
+  same name.
+- `foundry-destroy-all`: destroys everything `foundry-create-all` creates,
+  with the `azure-iac` workflow of the same name.
 - `release`: publishes a GitHub Release when a `v*.*.*` tag matching
   `VERSION` and `CHANGELOG.md` is pushed.
 
@@ -39,7 +44,8 @@ tools. For details on usage, limits, and review practices, please see the
 
 Run the `aif-create` workflow, choosing the environment (`dev` or `lab`).
 It creates `rg-<workload>ai-<env>`, `aif-<workload>-<env>` (account and
-custom domain) and `proj-<workload>-<env>`.
+custom domain) and `proj-<workload>-<env>`. To also create the Container
+Apps, run `foundry-create-all` instead, passing the `apps` JSON array.
 
 Then run the `aif-model-deploy` workflow to deploy a model. The deployment
 name defaults to the model name.
@@ -50,7 +56,8 @@ To remove only a model, run the `aif-model-delete` workflow with the
 deployment name and `confirm` set to `Yes`.
 
 Run the `aif-destroy` workflow with the same environment and `confirm` set
-to `Yes`.
+to `Yes`. If the estate was created by `foundry-create-all`, run
+`foundry-destroy-all` instead.
 
 ## Configuration
 

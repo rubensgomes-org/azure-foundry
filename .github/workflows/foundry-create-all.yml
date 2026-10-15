@@ -1,0 +1,64 @@
+# =============================================================================
+# foundry-create-all
+#
+# Creates the Container Apps and their dependencies, then the Azure AI
+# Foundry resource and project, by calling the reusable Foundry Create All
+# workflow in the Terraform IaC `azure-iac` repo.
+#
+# This project's source code and documentation were generated with the
+# assistance of Artificial Intelligence (AI). For more information, please
+# refer to the `AI_DISCLAIMER.md` document located in the project's root
+# directory.
+# =============================================================================
+name: Foundry Create All
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment_name:
+        description: 'Estate environment to provision.'
+        required: true
+        type: choice
+        options:
+          - dev
+          - lab
+      acr_name:
+        description: 'Registry to pull images from.'
+        required: true
+        type: choice
+        options:
+          - crrgomesdev01
+          - crrgomeslab02
+      apps:
+        description: 'JSON array of app names, e.g. ["api","worker"].'
+        required: true
+        type: string
+      health_probe_paths:
+        description: 'JSON map from app name to HTTP health path.'
+        required: false
+        type: string
+        default: '{}'
+      ingress_external_apps:
+        description: 'JSON array of apps reachable from the VNet.'
+        required: false
+        type: string
+        default: '[]'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: foundry-${{ inputs.environment_name }}
+  cancel-in-progress: false
+
+jobs:
+  foundry-create-all:
+    uses: rubensgomes-org/azure-iac/.github/workflows/foundry-create-all.yml@v0
+    with:
+      environment_name: ${{ inputs.environment_name }}
+      acr_name: ${{ inputs.acr_name }}
+      apps: ${{ inputs.apps }}
+      health_probe_paths: ${{ inputs.health_probe_paths }}
+      ingress_external_apps: ${{ inputs.ingress_external_apps }}
+    secrets:
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

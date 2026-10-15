@@ -19,6 +19,9 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `foundry-create-all` and `foundry-destroy-all` workflows calling the
+  `azure-iac` reusable workflows of the same name.
+
 ### Changed
 
 ### Fixed
