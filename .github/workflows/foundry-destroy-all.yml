@@ -31,9 +31,10 @@ on:
           - crrgomesdev01
           - crrgomeslab02
       apps:
-        description: 'JSON array of app names, e.g. ["api","worker"].'
+        description: 'JSON array of app names. Review and update as needed.'
         required: true
         type: string
+        default: '["mathagent", "mathmcp", "nettools"]'
       confirm:
         description: >
           DESTROYS FOUNDRY, THE CONTAINER APPS, THE REGISTRY AND ITS IMAGES,

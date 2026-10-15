@@ -30,9 +30,10 @@ on:
           - crrgomesdev01
           - crrgomeslab02
       apps:
-        description: 'JSON array of app names, e.g. ["api","worker"].'
+        description: 'JSON array of app names. Review and update as needed.'
         required: true
         type: string
+        default: '["mathagent", "mathmcp", "nettools"]'
       health_probe_paths:
         description: 'JSON map from app name to HTTP health path.'
         required: false

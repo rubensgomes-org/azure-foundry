@@ -30,7 +30,8 @@ the bump policy against the current `VERSION`.
 ### Added
 
 - `foundry-create-all` and `foundry-destroy-all` workflows calling the
-  `azure-iac` reusable workflows of the same name.
+  `azure-iac` reusable workflows of the same name. The `apps` input
+  defaults to `["mathagent", "mathmcp", "nettools"]`.
 
 ### Changed
 
