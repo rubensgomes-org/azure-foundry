@@ -19,7 +19,14 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `azure_foundry` Python package (Poetry), with `config.yaml` loading and
+  logging setup in `azure_foundry.config`.
+- `HelloAgent`, a basic Foundry agent; run it with
+  `python -m azure_foundry.agent [prompt]`.
+
 ### Changed
+
+- Sonar analyses `src/`.
 
 ### Fixed
 
