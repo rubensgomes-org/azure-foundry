@@ -106,6 +106,8 @@ declare -Ar ACTION_VARIABLES=(
   [TF_VAR_BACKEND_RESOURCE_GROUP_NAME]=\
 "${TF_VAR_backend_resource_group_name:-}"
   [TF_VAR_CONTAINER_NAME]="${TF_VAR_container_name:-}"
+  [TF_VAR_FOUNDRY_LOCATION]=\
+"${TF_VAR_foundry_location:-${TF_VAR_location:-}}"
   [TF_VAR_LOCATION]="${TF_VAR_location:-}"
   [TF_VAR_OWNER]="${TF_VAR_owner:-}"
   [TF_VAR_STORAGE_ACCOUNT_ID]="${TF_VAR_storage_account_id:-}"
@@ -118,6 +120,7 @@ declare -ar ACTION_VARIABLE_ORDER=(
   AZURE_TENANT_ID
   TF_VAR_BACKEND_RESOURCE_GROUP_NAME
   TF_VAR_CONTAINER_NAME
+  TF_VAR_FOUNDRY_LOCATION
   TF_VAR_LOCATION
   TF_VAR_OWNER
   TF_VAR_STORAGE_ACCOUNT_ID
@@ -144,6 +147,8 @@ declare -Ar REQUIRED_VARIABLE_SOURCES=(
   [TF_VAR_BACKEND_RESOURCE_GROUP_NAME]=\
 "TF_VAR_backend_resource_group_name"
   [TF_VAR_CONTAINER_NAME]="TF_VAR_container_name"
+  [TF_VAR_FOUNDRY_LOCATION]=\
+"TF_VAR_foundry_location (or TF_VAR_location)"
   [TF_VAR_LOCATION]="TF_VAR_location"
   [TF_VAR_OWNER]="TF_VAR_owner"
   [TF_VAR_STORAGE_ACCOUNT_ID]="TF_VAR_storage_account_id"

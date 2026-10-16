@@ -22,6 +22,11 @@ on:
         options:
           - dev
           - lab
+      location:
+        description: 'Region for Foundry. Empty uses TF_VAR_FOUNDRY_LOCATION.'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -35,5 +40,6 @@ jobs:
     uses: rubensgomes-org/azure-iac/.github/workflows/aif-create.yml@v0
     with:
       environment_name: ${{ inputs.environment_name }}
+      location: ${{ inputs.location }}
     secrets:
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

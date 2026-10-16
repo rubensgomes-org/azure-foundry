@@ -42,7 +42,8 @@ tools. For details on usage, limits, and review practices, please see the
 
 ## Installation
 
-Run the `aif-create` workflow, choosing the environment (`dev` or `lab`).
+Run the `aif-create` workflow, choosing the environment (`dev` or `lab`)
+and, optionally, a region (empty uses `TF_VAR_foundry_location`).
 It creates `rg-<workload>ai-<env>`, `aif-<workload>-<env>` (account and
 custom domain) and `proj-<workload>-<env>`. To also create the Container
 Apps, run `foundry-create-all` instead, passing the `apps` JSON array.
@@ -66,7 +67,8 @@ repository's Actions variables and secrets:
 
 - `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`,
   `AZURE_SUBSCRIPTION_ID` (or the `ARM_*` equivalents).
-- `TF_VAR_workload`, `TF_VAR_owner`, `TF_VAR_location`.
+- `TF_VAR_workload`, `TF_VAR_owner`, `TF_VAR_location`,
+  `TF_VAR_foundry_location` (optional, defaults to `TF_VAR_location`).
 - `TF_VAR_backend_resource_group_name`, `TF_VAR_storage_account_id`,
   `TF_VAR_container_name` (the `azure-iac` state backend).
 - `PYPI_API_TOKEN`, `SONAR_TOKEN`.

@@ -19,6 +19,12 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `aif-create.yml` takes an optional `location` input for the Foundry
+  resource and project region. Empty uses `TF_VAR_FOUNDRY_LOCATION`.
+  Requires `azure-iac` with the same input on `v0`.
+- `scripts/initvars.sh` manages `TF_VAR_FOUNDRY_LOCATION`, defaulting to
+  `TF_VAR_location`.
+
 ### Changed
 
 ### Fixed
