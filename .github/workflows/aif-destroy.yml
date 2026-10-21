@@ -23,6 +23,11 @@ on:
         options:
           - dev
           - lab
+      location:
+        description: 'Region for Foundry. Empty uses TF_VAR_FOUNDRY_LOCATION.'
+        required: false
+        type: string
+        default: ''
       confirm:
         description: >
           DESTROYS THE FOUNDRY PROJECT AND RESOURCE.
@@ -46,6 +51,7 @@ jobs:
     uses: rubensgomes-org/azure-iac/.github/workflows/aif-destroy.yml@v0
     with:
       environment_name: ${{ inputs.environment_name }}
+      location: ${{ inputs.location }}
       confirm: ${{ inputs.confirm }}
     secrets:
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

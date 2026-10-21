@@ -19,6 +19,10 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `aif-destroy.yml` takes an optional `location` input. Empty uses
+  `TF_VAR_FOUNDRY_LOCATION`. Requires `azure-iac` with the same input on
+  `v0`.
+
 ### Changed
 
 ### Fixed
