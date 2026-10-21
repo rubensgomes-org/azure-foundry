@@ -19,6 +19,16 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.0.15] - 2026-10-21
+
+### Added
+
 - `aif-model-deploy.yml` and `aif-model-delete.yml` take an optional
   `location` input. Empty uses `TF_VAR_FOUNDRY_LOCATION`, then
   `TF_VAR_LOCATION`.
