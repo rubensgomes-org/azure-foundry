@@ -18,3 +18,4 @@ class AppConfig(BaseModel):
 
     foundry: FoundryConfig
     logging: dict[str, Any]
+

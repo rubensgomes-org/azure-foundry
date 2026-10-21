@@ -140,6 +140,7 @@ out/
 /.nb-gradle/
 
 ### AI plan files ###
+misc/
 misc/tasks/
 *.bkp
 

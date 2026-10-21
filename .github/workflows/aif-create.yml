@@ -1,9 +1,9 @@
 # =============================================================================
 # aif-create
 #
-# Creates (if needed) the "ai" resource group, an Azure AI Foundry resource
-# and a project in it by calling the reusable AIF Create workflow in the
-# Terraform IaC `azure-iac` repo. Endpoints and keys are never printed.
+# Creates (if needed) the "ai" resource group, an Azure AI Foundry resource,
+# a project in it and, optionally, Application Insights by calling the
+# reusable AIF Create workflow in the Terraform IaC `azure-iac` repo. Endpoints and keys are never printed.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please
@@ -27,6 +27,14 @@ on:
         required: false
         type: string
         default: ''
+      app_insights:
+        description: 'Create Application Insights for agent tracing?'
+        required: true
+        type: choice
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 
 permissions:
   contents: read
@@ -41,5 +49,6 @@ jobs:
     with:
       environment_name: ${{ inputs.environment_name }}
       location: ${{ inputs.location }}
+      app_insights: ${{ inputs.app_insights == 'yes' }}
     secrets:
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
