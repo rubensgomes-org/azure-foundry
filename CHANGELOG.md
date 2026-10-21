@@ -19,6 +19,16 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.0.13] - 2026-10-21
+
+### Added
+
 - `aif-create.yml` takes an `app_insights` input (`yes`/`no`, default
   `no`). Only `yes` creates Application Insights; `no` deletes an existing
   one. Requires `azure-iac` with the same input on `v0`.
