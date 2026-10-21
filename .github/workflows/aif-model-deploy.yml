@@ -62,6 +62,11 @@ on:
         description: 'Deployment name. Default: the model name.'
         required: false
         type: string
+      location:
+        description: 'Foundry region. Empty uses TF_VAR_FOUNDRY_LOCATION.'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -86,13 +91,24 @@ jobs:
           MODEL_NAME: ${{ inputs.model_name }}
           DEPLOYMENT_INPUT: ${{ inputs.deployment_name }}
           CAPACITY: ${{ inputs.capacity }}
+          # Same fallback as azure-iac aif-create.yml.
+          LOCATION: ${{
+            inputs.location || vars.TF_VAR_FOUNDRY_LOCATION
+            || vars.TF_VAR_LOCATION }}
         run: |
           echo "=============================================================="
           echo " STEP: Validate inputs and resolve the resource names"
           echo "=============================================================="
           set -euo pipefail
           deployment_pattern='^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$'
-          foundry_resource="aif-${WORKLOAD}-${ENV_NAME}"
+          region="$(printf '%s' "$LOCATION" | tr -d ' ' \
+            | tr '[:upper:]' '[:lower:]')"
+          if ! printf '%s' "$region" | grep -qE '^[a-z][a-z0-9]{1,30}$'; then
+            echo "Invalid location '${LOCATION}': use an Azure region" \
+              "name such as 'swedencentral'." >&2
+            exit 1
+          fi
+          foundry_resource="aif-${WORKLOAD}-${ENV_NAME}-${region}"
           deployment="${DEPLOYMENT_INPUT:-$MODEL_NAME}"
           if ! printf '%s' "$deployment" | grep -qE "$deployment_pattern"
           then

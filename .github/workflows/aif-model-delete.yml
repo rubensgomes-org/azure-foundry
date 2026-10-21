@@ -27,6 +27,11 @@ on:
         required: true
         type: string
         default: gpt-5-nano
+      location:
+        description: 'Foundry region. Empty uses TF_VAR_FOUNDRY_LOCATION.'
+        required: false
+        type: string
+        default: ''
       confirm:
         description: >
           DELETES THE MODEL DEPLOYMENT.
@@ -60,6 +65,10 @@ jobs:
           ENV_NAME: ${{ inputs.environment_name }}
           DEPLOYMENT_NAME: ${{ inputs.deployment_name }}
           CONFIRM: ${{ inputs.confirm }}
+          # Same fallback as azure-iac aif-create.yml.
+          LOCATION: ${{
+            inputs.location || vars.TF_VAR_FOUNDRY_LOCATION
+            || vars.TF_VAR_LOCATION }}
         run: |
           echo "=============================================================="
           echo " STEP: Validate confirmation and resolve the resource names"
@@ -76,13 +85,21 @@ jobs:
               "alphanumerics, '.', '_' or '-', starting alphanumeric." >&2
             exit 1
           fi
+          region="$(printf '%s' "$LOCATION" | tr -d ' ' \
+            | tr '[:upper:]' '[:lower:]')"
+          if ! printf '%s' "$region" | grep -qE '^[a-z][a-z0-9]{1,30}$'; then
+            echo "Invalid location '${LOCATION}': use an Azure region" \
+              "name such as 'swedencentral'." >&2
+            exit 1
+          fi
+          foundry_resource="aif-${WORKLOAD}-${ENV_NAME}-${region}"
           {
             echo "resource_group=rg-${WORKLOAD}ai-${ENV_NAME}"
-            echo "foundry_resource=aif-${WORKLOAD}-${ENV_NAME}"
+            echo "foundry_resource=${foundry_resource}"
             echo "deployment_name=${DEPLOYMENT_NAME}"
           } >> "$GITHUB_OUTPUT"
           echo "Resource group:   rg-${WORKLOAD}ai-${ENV_NAME}"
-          echo "Foundry resource: aif-${WORKLOAD}-${ENV_NAME}"
+          echo "Foundry resource: ${foundry_resource}"
           echo "Deployment:       ${DEPLOYMENT_NAME}"
 
   delete:

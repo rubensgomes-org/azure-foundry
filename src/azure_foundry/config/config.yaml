@@ -2,7 +2,7 @@
 # Foundry Configuration
 # =============================================================================
 foundry:
-  project_endpoint: "https://aif-rgomes-lab.services.ai.azure.com/api/projects/proj-rgomes-lab"
+  project_endpoint: "https://aif-rgomes-lab-swedencentral.services.ai.azure.com/api/projects/proj-rgomes-lab"
   model: "gpt-6-luna"
   instructions: >-
     You are a friendly assistant. Keep your answers brief.

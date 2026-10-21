@@ -46,7 +46,7 @@ az role assignment list \
 
 ```bash
 RESOURCE_GROUP="rg-rgomesai-dev"
-FOUNDRY_RESOURCE="aif-rgomes-dev"
+FOUNDRY_RESOURCE="aif-rgomes-dev-centralus"
 
 scope="/subscriptions/${AZURE_SUBSCRIPTION_ID}"
 scope+="/resourceGroups/${RESOURCE_GROUP}"
@@ -62,7 +62,7 @@ az role assignment create \
 
 ```bash
 RESOURCE_GROUP="rg-rgomesai-dev"
-FOUNDRY_RESOURCE="aif-rgomes-dev"
+FOUNDRY_RESOURCE="aif-rgomes-dev-centralus"
 FOUNDRY_PROJECT="proj-rgomes-dev"
 
 scope="/subscriptions/${AZURE_SUBSCRIPTION_ID}"

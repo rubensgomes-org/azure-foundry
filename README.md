@@ -44,8 +44,8 @@ tools. For details on usage, limits, and review practices, please see the
 
 Run the `aif-create` workflow, choosing the environment (`dev` or `lab`)
 and, optionally, a region (empty uses `TF_VAR_foundry_location`).
-It creates `rg-<workload>ai-<env>`, `aif-<workload>-<env>` (account and
-custom domain) and `proj-<workload>-<env>`. Select `yes` for
+It creates `rg-<workload>ai-<env>`, `aif-<workload>-<env>-<region>`
+(account and custom domain) and `proj-<workload>-<env>`. Select `yes` for
 `app_insights` to also create `appi-<workload>ai-<env>` for agent tracing;
 `no` deletes an existing one. To also create the Container Apps, run
 `foundry-create-all` instead, passing the `apps` JSON array and the same

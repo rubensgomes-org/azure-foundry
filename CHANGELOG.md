@@ -19,7 +19,16 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `aif-model-deploy.yml` and `aif-model-delete.yml` take an optional
+  `location` input. Empty uses `TF_VAR_FOUNDRY_LOCATION`, then
+  `TF_VAR_LOCATION`.
+
 ### Changed
+
+- **Breaking:** the Foundry resource is named
+  `aif-<workload>-<env>-<region>`. Requires `azure-iac` with the same name
+  on `v0`. The next `aif-create` replaces the resource and its model
+  deployments; run `aif-model-deploy` again afterwards.
 
 ### Fixed
 
