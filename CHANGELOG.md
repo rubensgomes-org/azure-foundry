@@ -19,6 +19,9 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `foundry-create-all.yml` takes the same `app_insights` input as
+  `aif-create.yml`. Requires `azure-iac` with the same input on `v0`.
+
 ### Changed
 
 ### Fixed

@@ -2,8 +2,9 @@
 # foundry-create-all
 #
 # Creates the Container Apps and their dependencies, then the Azure AI
-# Foundry resource and project, by calling the reusable Foundry Create All
-# workflow in the Terraform IaC `azure-iac` repo.
+# Foundry resource, project and, optionally, Application Insights, by
+# calling the reusable Foundry Create All workflow in the Terraform IaC
+# `azure-iac` repo.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please
@@ -44,6 +45,14 @@ on:
         required: false
         type: string
         default: '[]'
+      app_insights:
+        description: 'Create Application Insights for agent tracing?'
+        required: true
+        type: choice
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 
 permissions:
   contents: read
@@ -61,5 +70,6 @@ jobs:
       apps: ${{ inputs.apps }}
       health_probe_paths: ${{ inputs.health_probe_paths }}
       ingress_external_apps: ${{ inputs.ingress_external_apps }}
+      app_insights: ${{ inputs.app_insights == 'yes' }}
     secrets:
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
