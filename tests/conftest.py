@@ -4,13 +4,13 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from unittest.mock import MagicMock
 
-import httpx
+import httpx2
 import pytest
 from pytest_mock import MockerFixture
 
 AGENT_NAME = "test-agent"
 CONVERSATION_ID = "conv-123"
-REQUEST = httpx.Request("POST", "https://test.services.ai.azure.com")
+REQUEST = httpx2.Request("POST", "https://test.services.ai.azure.com")
 
 
 @dataclass(frozen=True)

@@ -6,7 +6,7 @@
 import logging
 from collections.abc import Callable
 
-import httpx
+import httpx2
 import pytest
 from openai import APIError, APIStatusError
 from pytest_mock import MockerFixture
@@ -33,7 +33,7 @@ def test_log_api_error_logs_status_code_and_body_message(
 ) -> None:
     error = APIStatusError(
         "bad request",
-        response=httpx.Response(400, request=REQUEST),
+        response=httpx2.Response(400, request=REQUEST),
         body=ERROR_BODY,
     )
 
