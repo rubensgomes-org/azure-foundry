@@ -21,6 +21,10 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+- `agent_foundry_iq/agent_client.py` runs an interactive chat with the
+  agent, prompts for MCP tool approvals, and logs Foundry API errors.
+- Bumped `ai-utils-lib` to 0.0.15.
+
 ### Fixed
 
 ### Removed
