@@ -1,5 +1,20 @@
 """Interactive console client for a Foundry IQ server-side agent."""
 
+# The "Search Index Data Reader" RBAC role needs to be assigned to the
+# Foundry Project "proj-rgomes-lab" system-managed identity, using its
+# Entra Object ID, to allow the project to read the AI Search resource
+# "iq-rgomesai-lab-centralus":
+#
+# PROJ_MANAGED_IDENTIY_OID="..." (e.g., 2298db57-0327-464f-b9b6-8b0aeae96e9c)
+# SEARCH_ID=$(az search service show -g rg-rgomesai-lab \
+#  -n iq-rgomesai-lab-centralus --query id -o tsv)
+# az role assignment create \
+#  --assignee-object-id "${PROJ_MANAGED_IDENTIY_OID}"  \
+#  --assignee-principal-type ServicePrincipal \
+#  --role "Search Index Data Reader" \
+#  --scope "${SEARCH_ID}"
+#
+
 import asyncio
 import json
 import logging
@@ -156,9 +171,13 @@ async def main() -> None:
         await client_mgr.close()
 
 
-if __name__ == "__main__":
+def run() -> None:
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
         logger.info("user hit Ctrl+C")
         print("\nProgram terminated.")
+
+
+if __name__ == "__main__":
+    run()

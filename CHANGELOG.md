@@ -19,15 +19,27 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `build-verify.yml` workflow runs static analysis and unit test coverage
+  on push, with an optional SonarCloud scan.
+- Unit tests for the `agent_basic` and `agent_foundry_iq` agent clients.
+- `agent_basic/agent_client.py` runs an interactive chat with a basic
+  agent.
+- `agent-basic` and `agent-foundry-iq` console scripts.
+- `pytest-mock` test dependency.
+
 ### Changed
 
 - `agent_foundry_iq/agent_client.py` runs an interactive chat with the
   agent, prompts for MCP tool approvals, and logs Foundry API errors.
 - Bumped `ai-utils-lib` to 0.0.15.
+- `ai-utils-lib` installs from PyPI; the local editable override in
+  `pyproject.toml` is commented out.
 
 ### Fixed
 
 ### Removed
+
+- Empty `agent_custom_tools` package.
 
 ## [0.0.16] - 2026-10-21
 
