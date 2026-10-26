@@ -92,9 +92,9 @@ ignore_missing_imports = true
 [tool.poetry]
 packages = [{ include = "azure_foundry", from = "src" }]
 
-[tool.poetry.dependencies]
+#[tool.poetry.dependencies]
 # Install the local ai-utils-lib checkout in editable mode.
-ai-utils-lib = { path = "../../python/ai-utils-lib", develop = true }
+#ai-utils-lib = { path = "../../python/ai-utils-lib", develop = true }
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
