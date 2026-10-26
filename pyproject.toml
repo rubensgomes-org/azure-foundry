@@ -31,6 +31,8 @@ dependencies = [
 [project.scripts]
 agent-basic = "azure_foundry.agent_basic.agent_client:run"
 agent-foundry-iq = "azure_foundry.agent_foundry_iq.agent_client:run"
+agent-functions = "azure_foundry.agent_functions.agent:run"
+
 
 [build-system]
 requires = ["poetry-core>=2.5,<3"]
@@ -90,9 +92,9 @@ ignore_missing_imports = true
 [tool.poetry]
 packages = [{ include = "azure_foundry", from = "src" }]
 
-# [tool.poetry.dependencies]
+[tool.poetry.dependencies]
 # Install the local ai-utils-lib checkout in editable mode.
-# ai-utils-lib = { path = "../../python/ai-utils-lib", develop = true }
+ai-utils-lib = { path = "../../python/ai-utils-lib", develop = true }
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

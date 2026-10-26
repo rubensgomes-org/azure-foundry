@@ -26,20 +26,24 @@ the bump policy against the current `VERSION`.
   agent.
 - `agent-basic` and `agent-foundry-iq` console scripts.
 - `pytest-mock` test dependency.
+- `agent_functions` package and `agent-functions` console script run an
+  astronomy agent that calls local function tools.
 
 ### Changed
 
 - `agent_foundry_iq/agent_client.py` runs an interactive chat with the
   agent, prompts for MCP tool approvals, and logs Foundry API errors.
 - Bumped `ai-utils-lib` to 0.0.15.
-- `ai-utils-lib` installs from PyPI; the local editable override in
-  `pyproject.toml` is commented out.
+- `ai-utils-lib` installs from the local editable checkout.
+- Removed unused `azure`, `mcp`, `model`, and `web` sections from the
+  `agent_basic` and `agent_foundry_iq` `config.yaml` files.
 
 ### Fixed
 
 ### Removed
 
 - Empty `agent_custom_tools` package.
+- Empty `agent_portal` package.
 
 ## [0.0.16] - 2026-10-21
 
