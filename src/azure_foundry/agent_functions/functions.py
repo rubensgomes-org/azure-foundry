@@ -1,3 +1,5 @@
+"""Local functions exposed to the agent as function tools."""
+
 import json
 from datetime import datetime
 from pathlib import Path
@@ -7,7 +9,7 @@ DATA_DIR = Path(__file__).parent / "data"
 
 def _load_events(file_path: Path = DATA_DIR / "events.txt") -> list:
     events = []
-    with open(file_path) as f:
+    with open(file_path, encoding="utf-8") as f:
         for line in f:
             parts = line.strip().split("|")
             if len(parts) == 4:
@@ -27,7 +29,7 @@ def _load_events(file_path: Path = DATA_DIR / "events.txt") -> list:
 
 def _load_rates(file_path: Path) -> dict:
     rates = {}
-    with open(file_path) as f:
+    with open(file_path, encoding="utf-8") as f:
         for line in f:
             parts = line.strip().split("|")
             if len(parts) == 2:
@@ -41,13 +43,13 @@ PRIORITY_MULTIPLIERS = _load_rates(DATA_DIR / "priority_multipliers.txt")
 
 
 # Determine the next visible astronomical event for a given location
-# Determine the next visible astronomical event for a given location
 def next_visible_event(location: str) -> str:
     """Returns the next visible astronomical event for a location."""
     today = int(datetime.now().strftime("%m%d"))
     loc = location.lower().replace(" ", "_")
 
-    # Retrieve the next event visible from the location, starting with events later this year
+    # Retrieve the next event visible from the location, starting with events
+    # later this year
     for name, event_type, date, date_str, locs in EVENTS:
         if loc in locs and date >= today:
             return json.dumps(
@@ -62,7 +64,8 @@ def next_visible_event(location: str) -> str:
     return json.dumps({"message": f"No upcoming events found for {location}."})
 
 
-# Calculate the cost of telescope observation time based on the tier, hours, and priority
+# Calculate the cost of telescope observation time based on the tier, hours,
+# and priority
 def calculate_observation_cost(
     telescope_tier: str, hours: float, priority: str
 ) -> str:
@@ -73,14 +76,20 @@ def calculate_observation_cost(
     if tier not in TELESCOPE_RATES:
         return json.dumps(
             {
-                "error": f"Unknown telescope tier '{telescope_tier}'. Choose from: {', '.join(TELESCOPE_RATES)}"
+                "error": (
+                    f"Unknown telescope tier '{telescope_tier}'. "
+                    f"Choose from: {", ".join(TELESCOPE_RATES)}"
+                )
             }
         )
 
     if pri not in PRIORITY_MULTIPLIERS:
         return json.dumps(
             {
-                "error": f"Unknown priority '{priority}'. Choose from: {', '.join(PRIORITY_MULTIPLIERS)}"
+                "error": (
+                    f"Unknown priority '{priority}'. "
+                    f"Choose from: {", ".join(PRIORITY_MULTIPLIERS)}"
+                )
             }
         )
 
@@ -104,7 +113,8 @@ def calculate_observation_cost(
     )
 
 
-# Generate an observation report summarizing the details of an astronomical observation session
+# Generate an observation report summarizing the details of an astronomical
+# observation session
 def generate_observation_report(
     event_name: str,
     location: str,
@@ -128,7 +138,9 @@ def generate_observation_report(
         return json.dumps(cost_result)
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-    filename = f"report_{event_name.replace(' ', '_').lower()}_{timestamp.replace(':', '').replace(' ', '_')}.txt"
+    event_slug = event_name.replace(" ", "_").lower()
+    timestamp_slug = timestamp.replace(":", "").replace(" ", "_")
+    filename = f"report_{event_slug}_{timestamp_slug}.txt"
 
     report = f"""======================================
   CONTOSO OBSERVATORIES - SESSION REPORT
@@ -139,23 +151,23 @@ Event:          {event_name}
 Location:       {location}
 
 NEXT VISIBLE EVENT
-  Event:        {event_result.get('event', 'N/A')}
-  Date:         {event_result.get('date', 'N/A')}
+  Event:        {event_result.get("event", "N/A")}
+  Date:         {event_result.get("date", "N/A")}
 
 TELESCOPE BOOKING
-  Tier:         {cost_result['telescope_tier']}
-  Hours:        {cost_result['hours']}
-  Hourly Rate:  ${cost_result['hourly_rate']:.2f}
-  Priority:     {cost_result['priority']}
-  Multiplier:   {cost_result['priority_multiplier']}x
+  Tier:         {cost_result["telescope_tier"]}
+  Hours:        {cost_result["hours"]}
+  Hourly Rate:  ${cost_result["hourly_rate"]:.2f}
+  Priority:     {cost_result["priority"]}
+  Multiplier:   {cost_result["priority_multiplier"]}x
 
 COST SUMMARY
-  Base Cost:    ${cost_result['base_cost']:.2f}
-  Total Cost:   ${cost_result['total_cost']:.2f}
+  Base Cost:    ${cost_result["base_cost"]:.2f}
+  Total Cost:   ${cost_result["total_cost"]:.2f}
 ======================================
 """
 
-    with open(filename, "w") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write(report)
 
     return json.dumps({"status": "Report generated", "file": filename})

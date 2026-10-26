@@ -50,7 +50,10 @@ def _list_function_tools() -> list[Tool]:
             "properties": {
                 "location": {
                     "type": "string",
-                    "description": "continent to find the next visible event in (e.g. 'north_america', 'south_america', 'australia')",
+                    "description": (
+                        "continent to find the next visible event in (e.g. "
+                        "'north_america', 'south_america', 'australia')"
+                    ),
                 },
             },
             "required": ["location"],
@@ -63,21 +66,30 @@ def _list_function_tools() -> list[Tool]:
     # Define the observation cost function tool
     cost_tool = FunctionTool(
         name="calculate_observation_cost",
-        description="Calculate the cost of an observation based on the telescope tier, number of hours, and priority level.",
+        description=(
+            "Calculate the cost of an observation based on the telescope "
+            "tier, number of hours, and priority level."
+        ),
         parameters={
             "type": "object",
             "properties": {
                 "telescope_tier": {
                     "type": "string",
-                    "description": "the tier of the telescope (e.g. 'standard', 'advanced', 'premium')",
+                    "description": (
+                        "the tier of the telescope "
+                        "(e.g. 'standard', 'advanced', 'premium')"
+                    ),
                 },
                 "hours": {
                     "type": "number",
-                    "description": "the number of hours for the observation",
+                    "description": ("the number of hours for the observation"),
                 },
                 "priority": {
                     "type": "string",
-                    "description": "the priority level of the observation (e.g. 'low', 'normal', 'high')",
+                    "description": (
+                        "the priority level of the observation "
+                        "(e.g. 'low', 'normal', 'high')"
+                    ),
                 },
             },
             "required": ["telescope_tier", "hours", "priority"],
@@ -96,7 +108,9 @@ def _list_function_tools() -> list[Tool]:
             "properties": {
                 "event_name": {
                     "type": "string",
-                    "description": "the name of the astronomical event being observed",
+                    "description": (
+                        "the name of the astronomical event being observed"
+                    ),
                 },
                 "location": {
                     "type": "string",
@@ -104,19 +118,30 @@ def _list_function_tools() -> list[Tool]:
                 },
                 "telescope_tier": {
                     "type": "string",
-                    "description": "the tier of the telescope used for the observation (e.g. 'standard', 'advanced', 'premium')",
+                    "description": (
+                        "the tier of the telescope used for the observation "
+                        "(e.g. 'standard', 'advanced', 'premium')"
+                    ),
                 },
                 "hours": {
                     "type": "number",
-                    "description": "the number of hours the telescope was used for the observation",
+                    "description": (
+                        "the number of hours the telescope was used for the "
+                        "observation"
+                    ),
                 },
                 "priority": {
                     "type": "string",
-                    "description": "the priority level of the observation (e.g. 'low', 'normal', 'high')",
+                    "description": (
+                        "the priority level of the observation "
+                        "(e.g. 'low', 'normal', 'high')"
+                    ),
                 },
                 "observer_name": {
                     "type": "string",
-                    "description": "the name of the person who conducted the observation",
+                    "description": (
+                        "the name of the person who conducted the observation"
+                    ),
                 },
             },
             "required": [
