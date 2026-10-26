@@ -5,10 +5,12 @@ name = "ai-utils-lib"
 version = "0.0.18"
 description = "AI Utils Library."
 optional = false
-python-versions = ">=3.14,<4.0.0"
+python-versions = "<4.0.0,>=3.14"
 groups = ["main"]
-files = []
-develop = true
+files = [
+    {file = "ai_utils_lib-0.0.18-py3-none-any.whl", hash = "sha256:3be470986f80d038da5d178e0a982131b3addf116efcaf92e913c00bee249655"},
+    {file = "ai_utils_lib-0.0.18.tar.gz", hash = "sha256:fea0ad5ac3681f3230323f509c5b8430b1c09adb7a5f262fa4bcaf862e61ec0f"},
+]
 
 [package.dependencies]
 aiohttp = ">=3.14.5,<4"
@@ -21,10 +23,6 @@ colorlog = ">=6.12.0,<7"
 openai = ">=3.37,<4"
 pydantic = ">=2.14.1,<3"
 pyyaml = ">=6.0.3,<7"
-
-[package.source]
-type = "directory"
-url = "../../python/ai-utils-lib"
 
 [[package]]
 name = "aiohappyeyeballs"
@@ -4256,4 +4254,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14,<4.0.0"
-content-hash = "176222b5fe468858a795895c610f018531fb7a3f3ee00c90b6c4509bb888939b"
+content-hash = "175b1d9f95fd38eff5cf7813a2b4993af636ed51d9bbc81ac4311375bb28760a"
