@@ -19,6 +19,16 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.0.17] - 2026-10-29
+
+### Added
+
 - `build-verify.yml` workflow runs static analysis and unit test coverage
   on push, with an optional SonarCloud scan.
 - Unit tests for the `agent_basic` and `agent_foundry_iq` agent clients.
