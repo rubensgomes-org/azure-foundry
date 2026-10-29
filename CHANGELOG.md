@@ -21,6 +21,11 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+- `aif-create` adds a Foundry resource and project per location instead of
+  replacing the existing ones; `aif-destroy` deletes only the given location
+  and keeps the storage account while another location uses it. Requires the
+  `azure-iac` release with per-region Foundry state.
+
 ### Fixed
 
 ### Removed
