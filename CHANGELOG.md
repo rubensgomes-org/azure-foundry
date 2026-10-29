@@ -21,6 +21,16 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+### Fixed
+
+### Removed
+
+## [0.0.18] - 2026-10-29
+
+### Added
+
+### Changed
+
 - `aif-create` adds a Foundry resource and project per location instead of
   replacing the existing ones; `aif-destroy` deletes only the given location
   and keeps the storage account while another location uses it. Requires the
