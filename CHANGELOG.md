@@ -31,6 +31,8 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+- `aif-create` also creates storage account `st<workload>app<env>` with
+  blob container `cnt-<workload>app-<env>`; `aif-destroy` deletes them.
 - `agent_foundry_iq/agent_client.py` runs an interactive chat with the
   agent, prompts for MCP tool approvals, and logs Foundry API errors.
 - Bumped `ai-utils-lib` to 0.0.15.

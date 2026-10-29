@@ -3,8 +3,9 @@
 #
 # DESTRUCTIVE. Reverses foundry-create-all by calling the reusable Foundry
 # Destroy All workflow in the Terraform IaC `azure-iac` repo: deletes the
-# Foundry resource and project, the Container Apps and their dependencies,
-# the registry with its images, and the resource groups.
+# Foundry resource and project, the storage account, the Container Apps
+# and their dependencies, the registry with its images, and the resource
+# groups.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please
