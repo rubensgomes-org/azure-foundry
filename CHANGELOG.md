@@ -19,6 +19,16 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.0.20] - 2026-10-30
+
+### Added
+
 - `aif-project-create` and `aif-project-destroy` workflows create or delete
   one Foundry project, `proj-<workload>ai<name>-<env>-<region>`, on an
   existing Foundry resource.
