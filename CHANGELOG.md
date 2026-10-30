@@ -19,7 +19,17 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `aif-project-create` and `aif-project-destroy` workflows create or delete
+  one Foundry project, `proj-<workload>ai<name>-<env>-<region>`, on an
+  existing Foundry resource.
+
 ### Changed
+
+- **Breaking:** `aif-create` no longer creates a Foundry project; run
+  `aif-project-create` after it. `aif-destroy` refuses while a project
+  remains. Requires the matching `azure-iac` release.
+- `aif-create` and `aif-destroy` are renamed to "Foundry Create Resource"
+  and "Foundry Destroy Resource".
 
 ### Fixed
 

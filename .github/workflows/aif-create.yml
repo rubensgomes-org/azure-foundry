@@ -2,10 +2,10 @@
 # aif-create
 #
 # Creates (if needed) the "ai" resource group, a storage account, an Azure
-# AI Foundry resource, a project in it and, optionally, Application Insights
-# by calling the reusable AIF Create workflow in the Terraform IaC
-# `azure-iac` repo. Each environment and location gets its own Foundry
-# resource and project; existing ones are never destroyed. Endpoints and
+# AI Foundry resource and, optionally, Application Insights by calling the
+# reusable AIF Create workflow in the Terraform IaC `azure-iac` repo. Each
+# environment and location gets its own Foundry resource; existing ones are
+# never destroyed. Projects come from aif-project-create. Endpoints and
 # keys are never printed.
 #
 # This project's source code and documentation were generated with the
@@ -13,7 +13,7 @@
 # refer to the `AI_DISCLAIMER.md` document located in the project's root
 # directory.
 # =============================================================================
-name: Foundry Create Resource and Project
+name: Foundry Create Resource
 
 on:
   workflow_dispatch:

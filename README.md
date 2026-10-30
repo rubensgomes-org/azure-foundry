@@ -12,12 +12,14 @@
 
 GitHub Actions workflows (`.github/workflows`):
 
-- `aif-create`: creates the `ai` resource group, a storage account, an
-  Azure AI Foundry account and a project per location with the `azure-iac`
-  Terraform `aif-create` workflow. It never destroys an existing account.
-- `aif-destroy`: deletes the project and the account in one location, and
-  the storage account if no other location uses it, then purges the soft-deleted account, with the `azure-iac`
-  `aif-destroy` workflow.
+- `aif-create`: creates the `ai` resource group, a storage account and an
+  Azure AI Foundry account per location with the `azure-iac` Terraform
+  `aif-create` workflow. It never destroys an existing account.
+- `aif-destroy`: deletes the account in one location, and the storage
+  account if no other location uses it, then purges the soft-deleted
+  account, with the `azure-iac` `aif-destroy` workflow.
+- `aif-project-create` / `aif-project-destroy`: creates or deletes one
+  project on the account in one location.
 - `aif-model-deploy`: deploys a model (default `gpt-5-nano`,
   `GlobalStandard`) on the Foundry account.
 - `aif-model-delete`: deletes a model deployment.
@@ -46,23 +48,25 @@ tools. For details on usage, limits, and review practices, please see the
 Run the `aif-create` workflow, choosing the environment (`dev` or `lab`)
 and, optionally, a region (empty uses `TF_VAR_foundry_location`).
 It creates `rg-<workload>ai-<env>`, `aif-<workload>ai-<env>-<region>`
-(account and custom domain), `proj-<workload>ai-<env>-<region>` and
-`st<workload>app<env>` with container `cnt-<workload>app-<env>`. Select
-`yes` for `app_insights` to also create `appi-<workload>ai-<env>` for
-agent tracing; `no` deletes an existing one. To also create the Container Apps, run
-`foundry-create-all` instead, passing the `apps` JSON array and the same
-`app_insights` choice.
+(account and custom domain) and `st<workload>app<env>` with container
+`cnt-<workload>app-<env>`. Select `yes` for `app_insights` to also create
+`appi-<workload>ai-<env>` for agent tracing; `no` deletes an existing one.
+To also create the Container Apps, run `foundry-create-all` instead,
+passing the `apps` JSON array and the same `app_insights` choice.
 
-Then run the `aif-model-deploy` workflow to deploy a model. The deployment
-name defaults to the model name.
+Then run the `aif-project-create` workflow with the same environment and
+region to create `proj-<workload>ai<name>-<env>-<region>`, where the
+optional `name` input tells projects apart. Run the `aif-model-deploy`
+workflow to deploy a model. The deployment name defaults to the model name.
 
 ## Uninstall
 
 To remove only a model, run the `aif-model-delete` workflow with the
 deployment name and `confirm` set to `Yes`.
 
-Run the `aif-destroy` workflow with the same environment and `confirm` set
-to `Yes`. If the estate was created by `foundry-create-all`, run
+Run the `aif-project-destroy` workflow for each project, then the
+`aif-destroy` workflow, with the same environment and `confirm` set to
+`Yes`. If the estate was created by `foundry-create-all`, run
 `foundry-destroy-all` instead.
 
 ## Configuration

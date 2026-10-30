@@ -3,17 +3,18 @@
 #
 # DESTRUCTIVE. Reverses aif-create by calling the reusable AIF Destroy
 # workflow in the Terraform IaC `azure-iac` repo: deletes the Azure AI
-# Foundry project and resource in the given environment and location, with
-# every model deployment on it, and, unless another location still has a
+# Foundry resource in the given environment and location, with every model
+# deployment on it, and, unless another location still has a
 # Foundry resource, the storage account with every blob in it. The "ai"
-# resource group is kept.
+# resource group is kept. Refuses while a project remains; run
+# aif-project-destroy first.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please
 # refer to the `AI_DISCLAIMER.md` document located in the project's root
 # directory.
 # =============================================================================
-name: Foundry Destroy Project and Resource
+name: Foundry Destroy Resource
 
 on:
   workflow_dispatch:
@@ -32,7 +33,7 @@ on:
         default: ''
       confirm:
         description: >
-          DESTROYS THE FOUNDRY PROJECT, RESOURCE AND STORAGE ACCOUNT.
+          DESTROYS THE FOUNDRY RESOURCE AND STORAGE ACCOUNT.
           Choose "Yes" to confirm.
         required: true
         type: choice

@@ -1,0 +1,62 @@
+# =============================================================================
+# aif-project-destroy
+#
+# DESTRUCTIVE. Reverses aif-project-create by calling the reusable AIF
+# Project Destroy workflow in the Terraform IaC `azure-iac` repo: deletes
+# one Azure AI Foundry project, with every agent in it. The Foundry
+# resource and its other projects are kept.
+#
+# This project's source code and documentation were generated with the
+# assistance of Artificial Intelligence (AI). For more information, please
+# refer to the `AI_DISCLAIMER.md` document located in the project's root
+# directory.
+# =============================================================================
+name: Foundry Destroy Project
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment_name:
+        description: 'Estate environment holding the Foundry project.'
+        required: true
+        type: choice
+        options:
+          - dev
+          - lab
+      location:
+        description: 'Region for Foundry. Empty uses TF_VAR_FOUNDRY_LOCATION.'
+        required: false
+        type: string
+        default: ''
+      name:
+        description: 'Appended to <workload>ai in the project name.'
+        required: false
+        type: string
+        default: ''
+      confirm:
+        description: >
+          DESTROYS THE FOUNDRY PROJECT. Choose "Yes" to confirm.
+        required: true
+        type: choice
+        default: "No"
+        options:
+          - "No"
+          - "Yes"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: foundry-${{ inputs.environment_name }}
+  cancel-in-progress: false
+
+jobs:
+  aif-project-destroy:
+    uses: rubensgomes-org/azure-iac/.github/workflows/aif-project-destroy.yml@v0
+    with:
+      environment_name: ${{ inputs.environment_name }}
+      location: ${{ inputs.location }}
+      name: ${{ inputs.name }}
+      confirm: ${{ inputs.confirm }}
+    secrets:
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
