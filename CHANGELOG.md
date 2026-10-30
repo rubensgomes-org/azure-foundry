@@ -21,6 +21,11 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+- **Breaking:** the Foundry resource and project are renamed to
+  `aif-<workload>ai-<env>-<region>` and `proj-<workload>ai-<env>-<region>`.
+  Run `aif-destroy` before `aif-create`, then `aif-model-deploy`, and update
+  `project_endpoint`. Requires the matching `azure-iac` release.
+
 ### Fixed
 
 ### Removed

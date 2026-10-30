@@ -1,7 +1,7 @@
 """Interactive console client for a Foundry IQ server-side agent."""
 
 # The "Search Index Data Reader" RBAC role needs to be assigned to the
-# Foundry Project "proj-rgomes-lab" system-managed identity, using its
+# Foundry Project "proj-rgomesai-lab-eus2" system-managed identity, using its
 # Entra Object ID, to allow the project to read the AI Search resource
 # "iq-rgomesai-lab-centralus":
 #

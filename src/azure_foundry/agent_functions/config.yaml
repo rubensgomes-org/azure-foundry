@@ -2,7 +2,7 @@
 # Microsoft Foundry Configuration
 # ====================================================================
 foundry:
-    project_endpoint: "https://aif-rgomes-lab-eastus2.services.ai.azure.com/api/projects/proj-rgomes-lab"
+    project_endpoint: "https://aif-rgomesai-lab-eus2.services.ai.azure.com/api/projects/proj-rgomesai-lab-eus2"
     agent_name: "functions-agent"
 
 # ====================================================================
