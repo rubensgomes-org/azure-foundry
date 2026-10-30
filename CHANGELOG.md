@@ -21,6 +21,16 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+### Fixed
+
+### Removed
+
+## [0.0.19] - 2026-10-30
+
+### Added
+
+### Changed
+
 - **Breaking:** the Foundry resource and project are renamed to
   `aif-<workload>ai-<env>-<region>` and `proj-<workload>ai-<env>-<region>`.
   Run `aif-destroy` before `aif-create`, then `aif-model-deploy`, and update
