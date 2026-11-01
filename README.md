@@ -60,7 +60,9 @@ Then run the `aif-project-create` workflow with the same environment and
 region to create `proj-<workload>ai<name>-<env>-<region>`, where the
 optional `name` input tells projects apart. Run the `aif-model-deploy`
 workflow to deploy a model. The deployment name defaults to the model name.
-Run the `di-create` workflow to create `di-<workload>ai-<env>-<region>`.
+Run the `di-create` workflow to create `di-<workload>ai-<env>-<region>` and
+`st<workload>di<env><region>` with container `training` for custom models.
+Set the `TF_VAR_DI_USER_OBJECT_ID` variable to let that user label in Studio.
 
 ## Uninstall
 
@@ -71,7 +73,7 @@ Run the `aif-project-destroy` workflow for each project, then the
 `aif-destroy` workflow, with the same environment and `confirm` set to
 `Yes`. If the estate was created by `foundry-create-all`, run
 `foundry-destroy-all` instead. Run `di-destroy` with `confirm` set to `Yes`
-to delete Document Intelligence.
+to delete Document Intelligence and its training data.
 
 ## Configuration
 

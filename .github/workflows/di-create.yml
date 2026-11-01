@@ -2,9 +2,9 @@
 # di-create
 #
 # Creates (if needed) the "ai" resource group and an Azure AI Document
-# Intelligence resource by calling the reusable DI Create workflow in the
-# Terraform IaC `azure-iac` repo. An existing resource is never destroyed.
-# Endpoints and keys are never printed.
+# Intelligence resource with its training storage by calling the reusable
+# DI Create workflow in the Terraform IaC `azure-iac` repo. An existing
+# resource is never destroyed. Endpoints and keys are never printed.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please

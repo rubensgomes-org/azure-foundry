@@ -21,6 +21,10 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+- `di-create` also creates the training storage account and container;
+  `di-destroy` deletes them with every blob. Requires the matching
+  `azure-iac` release.
+
 ### Fixed
 
 ### Removed
