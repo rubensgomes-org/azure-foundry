@@ -19,6 +19,16 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.0.21] - 2026-10-31
+
+### Added
+
 - `di-create` and `di-destroy` workflows create or delete an Azure AI
   Document Intelligence resource with the `azure-iac` workflows of the same
   name. Requires the matching `azure-iac` release.
