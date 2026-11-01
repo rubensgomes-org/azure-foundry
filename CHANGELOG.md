@@ -19,6 +19,16 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.0.23] - 2026-11-01
+
+### Added
+
 - `srch-create` and `srch-destroy` workflows for Azure AI Search.
 
 ### Changed
