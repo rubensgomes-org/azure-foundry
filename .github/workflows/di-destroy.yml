@@ -1,0 +1,50 @@
+# =============================================================================
+# di-destroy
+#
+# DESTRUCTIVE. Reverses di-create by calling the reusable DI Destroy
+# workflow in the Terraform IaC `azure-iac` repo: deletes the Azure AI
+# Document Intelligence resource. The "ai" resource group is kept.
+#
+# This project's source code and documentation were generated with the
+# assistance of Artificial Intelligence (AI). For more information, please
+# refer to the `AI_DISCLAIMER.md` document located in the project's root
+# directory.
+# =============================================================================
+name: Document Intelligence Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment_name:
+        description: 'Estate environment holding Document Intelligence.'
+        required: true
+        type: choice
+        options:
+          - dev
+          - lab
+      confirm:
+        description: >
+          DESTROYS THE DOCUMENT INTELLIGENCE RESOURCE.
+          Choose "Yes" to confirm.
+        required: true
+        type: choice
+        default: "No"
+        options:
+          - "No"
+          - "Yes"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: di-${{ inputs.environment_name }}
+  cancel-in-progress: false
+
+jobs:
+  di-destroy:
+    uses: rubensgomes-org/azure-iac/.github/workflows/di-destroy.yml@v0
+    with:
+      environment_name: ${{ inputs.environment_name }}
+      confirm: ${{ inputs.confirm }}
+    secrets:
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

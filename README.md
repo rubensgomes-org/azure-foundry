@@ -23,6 +23,8 @@ GitHub Actions workflows (`.github/workflows`):
 - `aif-model-deploy`: deploys a model (default `gpt-5-nano`,
   `GlobalStandard`) on the Foundry account.
 - `aif-model-delete`: deletes a model deployment.
+- `di-create` / `di-destroy`: creates or deletes an Azure AI Document
+  Intelligence resource with the `azure-iac` workflows of the same name.
 - `foundry-create-all`: creates the Container Apps, their dependencies and
   the Foundry account and project with the `azure-iac` workflow of the
   same name.
@@ -58,6 +60,7 @@ Then run the `aif-project-create` workflow with the same environment and
 region to create `proj-<workload>ai<name>-<env>-<region>`, where the
 optional `name` input tells projects apart. Run the `aif-model-deploy`
 workflow to deploy a model. The deployment name defaults to the model name.
+Run the `di-create` workflow to create `di-<workload>ai-<env>-<region>`.
 
 ## Uninstall
 
@@ -67,7 +70,8 @@ deployment name and `confirm` set to `Yes`.
 Run the `aif-project-destroy` workflow for each project, then the
 `aif-destroy` workflow, with the same environment and `confirm` set to
 `Yes`. If the estate was created by `foundry-create-all`, run
-`foundry-destroy-all` instead.
+`foundry-destroy-all` instead. Run `di-destroy` with `confirm` set to `Yes`
+to delete Document Intelligence.
 
 ## Configuration
 
