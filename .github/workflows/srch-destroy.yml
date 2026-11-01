@@ -3,8 +3,8 @@
 #
 # DESTRUCTIVE. Reverses srch-create by calling the reusable Search Destroy
 # workflow in the Terraform IaC `azure-iac` repo: deletes the Azure AI
-# Search service and its storage account with every blob in it. The "ai"
-# resource group is kept.
+# Search service in the given location and its storage account with every
+# blob in it. The "ai" resource group is kept.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please
@@ -23,6 +23,11 @@ on:
         options:
           - dev
           - lab
+      location:
+        description: 'Region for AI Search. Empty uses TF_VAR_FOUNDRY_LOCATION.'
+        required: false
+        type: string
+        default: ''
       confirm:
         description: >
           DESTROYS THE AI SEARCH SERVICE AND ITS STORAGE.
@@ -46,6 +51,7 @@ jobs:
     uses: rubensgomes-org/azure-iac/.github/workflows/srch-destroy.yml@v0
     with:
       environment_name: ${{ inputs.environment_name }}
+      location: ${{ inputs.location }}
       confirm: ${{ inputs.confirm }}
     secrets:
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

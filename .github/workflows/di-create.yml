@@ -3,8 +3,9 @@
 #
 # Creates (if needed) the "ai" resource group and an Azure AI Document
 # Intelligence resource with its training storage by calling the reusable
-# DI Create workflow in the Terraform IaC `azure-iac` repo. An existing
-# resource is never destroyed. Endpoints and keys are never printed.
+# DI Create workflow in the Terraform IaC `azure-iac` repo. Each
+# environment and location gets its own resource; existing ones are never
+# destroyed. Endpoints and keys are never printed.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please
@@ -23,6 +24,11 @@ on:
         options:
           - dev
           - lab
+      location:
+        description: 'Region for DI. Empty uses TF_VAR_FOUNDRY_LOCATION.'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -36,5 +42,6 @@ jobs:
     uses: rubensgomes-org/azure-iac/.github/workflows/di-create.yml@v0
     with:
       environment_name: ${{ inputs.environment_name }}
+      location: ${{ inputs.location }}
     secrets:
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

@@ -21,6 +21,10 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+- `di-create`, `di-destroy`, `srch-create` and `srch-destroy` take an
+  optional `location` input and manage one resource per location. Needs
+  `azure-iac` with per-region DI and Search state.
+
 ### Fixed
 
 ### Removed
