@@ -1,0 +1,60 @@
+# =============================================================================
+# aif-resource-destroy
+#
+# DESTRUCTIVE. Reverses aif-resource-create by calling the reusable AIF
+# Resource Destroy workflow in the Terraform IaC `azure-iac` repo: deletes
+# the Azure AI Foundry resource in the given environment and location, with
+# every model deployment on it, and, unless another location still has a
+# Foundry resource, the storage account with every blob in it. The "ai"
+# resource group is kept. Refuses while a project remains; run
+# aif-project-destroy first.
+#
+# This project's source code and documentation were generated with the
+# assistance of Artificial Intelligence (AI). For more information, please
+# refer to the `AI_DISCLAIMER.md` document located in the project's root
+# directory.
+# =============================================================================
+name: Foundry Resource Destroy
+
+on:
+    workflow_dispatch:
+        inputs:
+            environment_name:
+                description: "Estate environment holding the Foundry resources."
+                required: true
+                type: choice
+                options:
+                    - dev
+                    - lab
+            location:
+                description: "Region for Foundry. Empty uses TF_VAR_FOUNDRY_LOCATION."
+                required: false
+                type: string
+                default: ""
+            confirm:
+                description: >
+                    DESTROYS THE FOUNDRY RESOURCE AND STORAGE ACCOUNT.
+                    Choose "Yes" to confirm.
+                required: true
+                type: choice
+                default: "No"
+                options:
+                    - "No"
+                    - "Yes"
+
+permissions:
+    contents: read
+
+concurrency:
+    group: foundry-${{ inputs.environment_name }}
+    cancel-in-progress: false
+
+jobs:
+    aif-resource-destroy:
+        uses: rubensgomes-org/azure-iac/.github/workflows/aif-resource-destroy.yml@v0
+        with:
+            environment_name: ${{ inputs.environment_name }}
+            location: ${{ inputs.location }}
+            confirm: ${{ inputs.confirm }}
+        secrets:
+            AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

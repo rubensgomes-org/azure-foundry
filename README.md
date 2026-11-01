@@ -12,12 +12,14 @@
 
 GitHub Actions workflows (`.github/workflows`):
 
-- `aif-create`: creates the `ai` resource group, a storage account and an
-  Azure AI Foundry account per location with the `azure-iac` Terraform
-  `aif-create` workflow. It never destroys an existing account.
-- `aif-destroy`: deletes the account in one location, and the storage
-  account if no other location uses it, then purges the soft-deleted
-  account, with the `azure-iac` `aif-destroy` workflow.
+- `aif-resource-create`: creates the `ai` resource group, a storage account
+  and an Azure AI Foundry account per location with the `azure-iac`
+  Terraform `aif-resource-create` workflow. It never destroys an existing
+  account.
+- `aif-resource-destroy`: deletes the account in one location, and the
+  storage account if no other location uses it, then purges the
+  soft-deleted account, with the `azure-iac` `aif-resource-destroy`
+  workflow.
 - `aif-project-create` / `aif-project-destroy`: creates or deletes one
   project on the account in one location.
 - `aif-model-deploy`: deploys a model (default `gpt-5-nano`,
@@ -25,9 +27,10 @@ GitHub Actions workflows (`.github/workflows`):
 - `aif-model-delete`: deletes a model deployment.
 - `di-create` / `di-destroy`: creates or deletes an Azure AI Document
   Intelligence resource with the `azure-iac` workflows of the same name.
+- `srch-create` / `srch-destroy`: creates or deletes an Azure AI Search
+  service with the `azure-iac` workflows of the same name.
 - `foundry-create-all`: creates the Container Apps, their dependencies and
-  the Foundry account and project with the `azure-iac` workflow of the
-  same name.
+  the Foundry account with the `azure-iac` workflow of the same name.
 - `foundry-destroy-all`: destroys everything `foundry-create-all` creates,
   with the `azure-iac` workflow of the same name.
 - `release`: publishes a GitHub Release when a `v*.*.*` tag matching
@@ -47,8 +50,8 @@ tools. For details on usage, limits, and review practices, please see the
 
 ## Installation
 
-Run the `aif-create` workflow, choosing the environment (`dev` or `lab`)
-and, optionally, a region (empty uses `TF_VAR_foundry_location`).
+Run the `aif-resource-create` workflow, choosing the environment (`dev` or
+`lab`) and, optionally, a region (empty uses `TF_VAR_foundry_location`).
 It creates `rg-<workload>ai-<env>`, `aif-<workload>ai-<env>-<region>`
 (account and custom domain) and `st<workload>app<env>` with container
 `cnt-<workload>app-<env>`. Select `yes` for `app_insights` to also create
@@ -63,6 +66,10 @@ workflow to deploy a model. The deployment name defaults to the model name.
 Run the `di-create` workflow to create `di-<workload>ai-<env>-<region>` and
 `st<workload>di<env><region>` with container `training` for custom models.
 Set the `TF_VAR_DI_USER_OBJECT_ID` variable to let that user label in Studio.
+Run the `srch-create` workflow to create `srch-<workload>ai-<env>-<region>`
+and `st<workload>srch<env><region>` with container `documents` to index.
+Set the `TF_VAR_SEARCH_USER_OBJECT_ID` variable to give that user portal
+access.
 
 ## Uninstall
 
@@ -70,10 +77,12 @@ To remove only a model, run the `aif-model-delete` workflow with the
 deployment name and `confirm` set to `Yes`.
 
 Run the `aif-project-destroy` workflow for each project, then the
-`aif-destroy` workflow, with the same environment and `confirm` set to
+`aif-resource-destroy` workflow, with the same environment and `confirm` set to
 `Yes`. If the estate was created by `foundry-create-all`, run
 `foundry-destroy-all` instead. Run `di-destroy` with `confirm` set to `Yes`
 to delete Document Intelligence and its training data.
+Run `srch-destroy` with `confirm` set to `Yes` to delete AI Search and its
+storage.
 
 ## Configuration
 

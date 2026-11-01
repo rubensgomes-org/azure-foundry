@@ -1,39 +1,31 @@
 # =============================================================================
-# aif-destroy
+# srch-destroy
 #
-# DESTRUCTIVE. Reverses aif-create by calling the reusable AIF Destroy
+# DESTRUCTIVE. Reverses srch-create by calling the reusable Search Destroy
 # workflow in the Terraform IaC `azure-iac` repo: deletes the Azure AI
-# Foundry resource in the given environment and location, with every model
-# deployment on it, and, unless another location still has a
-# Foundry resource, the storage account with every blob in it. The "ai"
-# resource group is kept. Refuses while a project remains; run
-# aif-project-destroy first.
+# Search service and its storage account with every blob in it. The "ai"
+# resource group is kept.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please
 # refer to the `AI_DISCLAIMER.md` document located in the project's root
 # directory.
 # =============================================================================
-name: Foundry Destroy Resource
+name: AI Search Destroy
 
 on:
   workflow_dispatch:
     inputs:
       environment_name:
-        description: 'Estate environment holding the Foundry resources.'
+        description: 'Estate environment holding AI Search.'
         required: true
         type: choice
         options:
           - dev
           - lab
-      location:
-        description: 'Region for Foundry. Empty uses TF_VAR_FOUNDRY_LOCATION.'
-        required: false
-        type: string
-        default: ''
       confirm:
         description: >
-          DESTROYS THE FOUNDRY RESOURCE AND STORAGE ACCOUNT.
+          DESTROYS THE AI SEARCH SERVICE AND ITS STORAGE.
           Choose "Yes" to confirm.
         required: true
         type: choice
@@ -46,15 +38,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: foundry-${{ inputs.environment_name }}
+  group: srch-${{ inputs.environment_name }}
   cancel-in-progress: false
 
 jobs:
-  aif-destroy:
-    uses: rubensgomes-org/azure-iac/.github/workflows/aif-destroy.yml@v0
+  srch-destroy:
+    uses: rubensgomes-org/azure-iac/.github/workflows/srch-destroy.yml@v0
     with:
       environment_name: ${{ inputs.environment_name }}
-      location: ${{ inputs.location }}
       confirm: ${{ inputs.confirm }}
     secrets:
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

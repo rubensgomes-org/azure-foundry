@@ -2,16 +2,17 @@
 # aif-project-create
 #
 # Creates an Azure AI Foundry project, proj-<workload>ai<name>-<env>-<region>,
-# under the Foundry resource that aif-create created in the same environment
-# and location, by calling the reusable AIF Project Create workflow in the
-# Terraform IaC `azure-iac` repo. Existing projects are never replaced.
+# under the Foundry resource that aif-resource-create created in the same
+# environment and location, by calling the reusable AIF Project Create
+# workflow in the Terraform IaC `azure-iac` repo. Existing projects are
+# never replaced.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please
 # refer to the `AI_DISCLAIMER.md` document located in the project's root
 # directory.
 # =============================================================================
-name: Foundry Create Project
+name: Foundry Project Create
 
 on:
   workflow_dispatch:

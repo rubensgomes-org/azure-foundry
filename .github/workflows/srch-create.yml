@@ -1,0 +1,40 @@
+# =============================================================================
+# srch-create
+#
+# Creates (if needed) the "ai" resource group and an Azure AI Search service
+# with its storage account by calling the reusable Search Create workflow in
+# the Terraform IaC `azure-iac` repo. An existing service is never
+# destroyed. Endpoints and keys are never printed.
+#
+# This project's source code and documentation were generated with the
+# assistance of Artificial Intelligence (AI). For more information, please
+# refer to the `AI_DISCLAIMER.md` document located in the project's root
+# directory.
+# =============================================================================
+name: AI Search Create
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment_name:
+        description: 'Estate environment to provision.'
+        required: true
+        type: choice
+        options:
+          - dev
+          - lab
+
+permissions:
+  contents: read
+
+concurrency:
+  group: srch-${{ inputs.environment_name }}
+  cancel-in-progress: false
+
+jobs:
+  srch-create:
+    uses: rubensgomes-org/azure-iac/.github/workflows/srch-create.yml@v0
+    with:
+      environment_name: ${{ inputs.environment_name }}
+    secrets:
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

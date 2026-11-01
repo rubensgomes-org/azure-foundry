@@ -19,9 +19,18 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `srch-create` and `srch-destroy` workflows for Azure AI Search.
+
 ### Changed
 
+- Renamed the `aif-create` and `aif-destroy` workflows to
+  `aif-resource-create` and `aif-resource-destroy`.
+
 ### Fixed
+
+- Workflow display names `Foundry ResourceCreate` and `Foundry Destroy
+  Project` are now `Foundry Resource Create` and `Foundry Project Destroy`.
+- `README.md` no longer says `foundry-create-all` creates a project.
 
 ### Removed
 
