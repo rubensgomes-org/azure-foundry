@@ -1,0 +1,50 @@
+# =============================================================================
+# wiq-destroy
+#
+# DESTRUCTIVE. Reverses wiq-create by calling the reusable Web IQ Destroy
+# workflow in the Terraform IaC `azure-iac` repo: deletes the global
+# Microsoft Web IQ account. The "ai" resource group is kept.
+#
+# This project's source code and documentation were generated with the
+# assistance of Artificial Intelligence (AI). For more information, please
+# refer to the `AI_DISCLAIMER.md` document located in the project's root
+# directory.
+# =============================================================================
+name: Web IQ Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment_name:
+        description: 'Estate environment holding Web IQ.'
+        required: true
+        type: choice
+        options:
+          - dev
+          - lab
+      confirm:
+        description: >
+          DESTROYS THE WEB IQ ACCOUNT.
+          Choose "Yes" to confirm.
+        required: true
+        type: choice
+        default: "No"
+        options:
+          - "No"
+          - "Yes"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wiq-${{ inputs.environment_name }}
+  cancel-in-progress: false
+
+jobs:
+  wiq-destroy:
+    uses: rubensgomes-org/azure-iac/.github/workflows/wiq-destroy.yml@v0
+    with:
+      environment_name: ${{ inputs.environment_name }}
+      confirm: ${{ inputs.confirm }}
+    secrets:
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

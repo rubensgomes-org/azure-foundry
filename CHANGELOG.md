@@ -19,6 +19,8 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `wiq-create` and `wiq-destroy` workflows for Microsoft Web IQ.
+
 ### Changed
 
 ### Fixed

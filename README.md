@@ -30,6 +30,8 @@ GitHub Actions workflows (`.github/workflows`):
   same name.
 - `srch-create` / `srch-destroy`: creates or deletes an Azure AI Search
   service per location with the `azure-iac` workflows of the same name.
+- `wiq-create` / `wiq-destroy`: creates or deletes a global Microsoft Web IQ
+  account with the `azure-iac` workflows of the same name.
 - `foundry-create-all`: creates the Container Apps, their dependencies and
   the Foundry account with the `azure-iac` workflow of the same name.
 - `foundry-destroy-all`: destroys everything `foundry-create-all` creates,
@@ -73,6 +75,7 @@ Run the `srch-create` workflow, with an optional region, to create
 container `documents` to index.
 Set the `TF_VAR_SEARCH_USER_OBJECT_ID` variable to give that user portal
 access.
+Run the `wiq-create` workflow to create `wiq-<workload>ai-<env>`.
 
 ## Uninstall
 
@@ -86,6 +89,7 @@ Run the `aif-project-destroy` workflow for each project, then the
 `confirm` set to `Yes` to delete Document Intelligence and its training data.
 Run `srch-destroy` with the same region and `confirm` set to `Yes` to delete
 AI Search and its storage.
+Run `wiq-destroy` with `confirm` set to `Yes` to delete Web IQ.
 
 ## Configuration
 
