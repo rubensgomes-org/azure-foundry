@@ -19,6 +19,8 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `lang-create` and `lang-destroy` workflows for Azure AI Language.
+
 ### Changed
 
 ### Fixed

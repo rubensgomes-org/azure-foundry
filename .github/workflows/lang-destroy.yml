@@ -1,0 +1,56 @@
+# =============================================================================
+# lang-destroy
+#
+# DESTRUCTIVE. Reverses lang-create by calling the reusable Lang Destroy
+# workflow in the Terraform IaC `azure-iac` repo: deletes the Azure AI
+# Language resource in the given location. The "ai" resource group is kept.
+#
+# This project's source code and documentation were generated with the
+# assistance of Artificial Intelligence (AI). For more information, please
+# refer to the `AI_DISCLAIMER.md` document located in the project's root
+# directory.
+# =============================================================================
+name: Language Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment_name:
+        description: 'Estate environment holding the Language resource.'
+        required: true
+        type: choice
+        options:
+          - dev
+          - lab
+      location:
+        description: 'Region for Language. Empty uses TF_VAR_FOUNDRY_LOCATION.'
+        required: false
+        type: string
+        default: ''
+      confirm:
+        description: >
+          DESTROYS THE LANGUAGE RESOURCE.
+          Choose "Yes" to confirm.
+        required: true
+        type: choice
+        default: "No"
+        options:
+          - "No"
+          - "Yes"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lang-${{ inputs.environment_name }}
+  cancel-in-progress: false
+
+jobs:
+  lang-destroy:
+    uses: rubensgomes-org/azure-iac/.github/workflows/lang-destroy.yml@v0
+    with:
+      environment_name: ${{ inputs.environment_name }}
+      location: ${{ inputs.location }}
+      confirm: ${{ inputs.confirm }}
+    secrets:
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

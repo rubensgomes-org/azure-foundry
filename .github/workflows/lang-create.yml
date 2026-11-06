@@ -1,0 +1,46 @@
+# =============================================================================
+# lang-create
+#
+# Creates (if needed) the "ai" resource group and an Azure AI Language
+# resource by calling the reusable Lang Create workflow in the Terraform IaC
+# `azure-iac` repo. Each environment and location gets its own resource;
+# existing ones are never destroyed. Endpoints and keys are never printed.
+#
+# This project's source code and documentation were generated with the
+# assistance of Artificial Intelligence (AI). For more information, please
+# refer to the `AI_DISCLAIMER.md` document located in the project's root
+# directory.
+# =============================================================================
+name: Language Create
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment_name:
+        description: 'Estate environment to provision.'
+        required: true
+        type: choice
+        options:
+          - dev
+          - lab
+      location:
+        description: 'Region for Language. Empty uses TF_VAR_FOUNDRY_LOCATION.'
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lang-${{ inputs.environment_name }}
+  cancel-in-progress: false
+
+jobs:
+  lang-create:
+    uses: rubensgomes-org/azure-iac/.github/workflows/lang-create.yml@v0
+    with:
+      environment_name: ${{ inputs.environment_name }}
+      location: ${{ inputs.location }}
+    secrets:
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

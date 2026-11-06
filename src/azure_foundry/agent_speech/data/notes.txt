@@ -1,0 +1,10 @@
+https://microsoftlearning.github.io/mslearn-ai-language/Instructions/Exercises/05-azure-speech-mcp.html
+
+Storage Account: strgomesaicentralus
+Container: files
+
+Blob SAS Token:
+sp=racwl&st=2026-10-26T13:50:04Z&se=2026-10-28T04:59:00Z&spr=https&sv=2026-02-06&sr=c&sig=DcDoL0QIeYGMjiYIDpPw6S6sQ7H%2Bl2BnLucw%2FuTx6Hw%3D
+
+Blob SAS URI:
+https://strgomesaicentralus.blob.core.windows.net/files?sp=racwl&st=2026-10-26T13:50:04Z&se=2026-10-28T04:59:00Z&spr=https&sv=2026-02-06&sr=c&sig=DcDoL0QIeYGMjiYIDpPw6S6sQ7H%2Bl2BnLucw%2FuTx6Hw%3D
