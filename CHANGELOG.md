@@ -19,6 +19,10 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `aif-resource-create` also creates container `cnt-<workload>ai` in the
+  Foundry storage account; `aif-resource-destroy` deletes it. Requires the
+  next `azure-iac` release.
+
 ### Changed
 
 ### Fixed
