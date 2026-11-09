@@ -3,8 +3,9 @@
 #
 # Creates (if needed) the "ai" resource group, a storage account, an Azure
 # AI Foundry resource and, optionally, Application Insights by calling the
-# reusable AIF Resource Create workflow in the Terraform IaC `azure-iac` repo. Each
-# environment and location gets its own Foundry resource; existing ones are
+# reusable AIF Resource Create workflow in the Terraform IaC `azure-iac` repo.
+# Each environment and location gets its own Foundry resource and storage
+# account (st<workload>ai<env><region>); existing Foundry resources are
 # never destroyed. Projects come from aif-project-create. Endpoints and
 # keys are never printed.
 #

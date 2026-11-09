@@ -13,13 +13,14 @@
 GitHub Actions workflows (`.github/workflows`):
 
 - `aif-resource-create`: creates the `ai` resource group, a storage account
-  and an Azure AI Foundry account per location with the `azure-iac`
-  Terraform `aif-resource-create` workflow. It never destroys an existing
-  account.
-- `aif-resource-destroy`: deletes the account in one location, and the
-  storage account if no other location uses it, then purges the
-  soft-deleted account, with the `azure-iac` `aif-resource-destroy`
-  workflow.
+  and, per location, an Azure AI Foundry account with its own storage
+  account (for example `aif-rgomesai-dev-eus2` and `strgomesaideveus2`) with
+  the `azure-iac` Terraform `aif-resource-create` workflow. It never
+  destroys an existing account.
+- `aif-resource-destroy`: deletes the account and its storage account in
+  one location, and the shared storage account if no other location uses
+  it, then purges the soft-deleted account, with the `azure-iac`
+  `aif-resource-destroy` workflow.
 - `aif-project-create` / `aif-project-destroy`: creates or deletes one
   project on the account in one location.
 - `aif-model-deploy`: deploys a model (default `gpt-5-nano`,

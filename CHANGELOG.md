@@ -19,6 +19,10 @@ the bump policy against the current `VERSION`.
 
 ### Added
 
+- `aif-resource-create` also creates a storage account per Foundry
+  resource (`st<workload>ai<env><region>`); `aif-resource-destroy` deletes
+  it. Requires the next `azure-iac` release.
+
 ### Changed
 
 ### Fixed
