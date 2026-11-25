@@ -21,6 +21,13 @@ the bump policy against the current `VERSION`.
 
 ### Changed
 
+- `aif-resource-create` enables shared key and public network access on the
+  Foundry storage account, and grants the Terraform SP and Foundry user
+  "Storage Blob Data Contributor" on it. Requires the next `azure-iac`
+  release.
+- `aif-project-create` runs `aif-resource-create` first and takes its
+  `app_insights` input, so the Foundry resource always exists.
+
 ### Fixed
 
 ### Removed

@@ -2,10 +2,10 @@
 # aif-project-create
 #
 # Creates an Azure AI Foundry project, proj-<workload>ai<name>-<env>-<region>,
-# under the Foundry resource that aif-resource-create created in the same
-# environment and location, by calling the reusable AIF Project Create
-# workflow in the Terraform IaC `azure-iac` repo. Existing projects are
-# never replaced.
+# by calling the reusable AIF Resource Create and AIF Project Create workflows
+# in the Terraform IaC `azure-iac` repo. The resource step first ensures the
+# "ai" resource group and Foundry resource exist in the same environment and
+# location. Existing projects are never replaced.
 #
 # This project's source code and documentation were generated with the
 # assistance of Artificial Intelligence (AI). For more information, please
@@ -34,6 +34,14 @@ on:
         required: false
         type: string
         default: ''
+      app_insights:
+        description: 'Keep or create Application Insights? "no" destroys it.'
+        required: true
+        type: choice
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 
 permissions:
   contents: read
@@ -43,7 +51,17 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  aif-resource-create:
+    uses: rubensgomes-org/azure-iac/.github/workflows/aif-resource-create.yml@v0
+    with:
+      environment_name: ${{ inputs.environment_name }}
+      location: ${{ inputs.location }}
+      app_insights: ${{ inputs.app_insights == 'yes' }}
+    secrets:
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+
   aif-project-create:
+    needs: aif-resource-create
     uses: rubensgomes-org/azure-iac/.github/workflows/aif-project-create.yml@v0
     with:
       environment_name: ${{ inputs.environment_name }}

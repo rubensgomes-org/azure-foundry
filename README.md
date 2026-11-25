@@ -22,7 +22,8 @@ GitHub Actions workflows (`.github/workflows`):
   it, then purges the soft-deleted account, with the `azure-iac`
   `aif-resource-destroy` workflow.
 - `aif-project-create` / `aif-project-destroy`: creates or deletes one
-  project on the account in one location.
+  project on the account in one location; create runs
+  `aif-resource-create` first.
 - `aif-model-deploy`: deploys a model (default `gpt-5-nano`,
   `GlobalStandard`) on the Foundry account.
 - `aif-model-delete`: deletes a model deployment.
@@ -65,9 +66,10 @@ It creates `rg-<workload>ai-<env>`, `aif-<workload>ai-<env>-<region>`
 To also create the Container Apps, run `foundry-create-all` instead,
 passing the `apps` JSON array and the same `app_insights` choice.
 
-Then run the `aif-project-create` workflow with the same environment and
-region to create `proj-<workload>ai<name>-<env>-<region>`, where the
-optional `name` input tells projects apart. Run the `aif-model-deploy`
+Then run the `aif-project-create` workflow with the same environment,
+region and `app_insights` choice to create
+`proj-<workload>ai<name>-<env>-<region>`, where the optional `name` input
+tells projects apart. It runs `aif-resource-create` first. Run the `aif-model-deploy`
 workflow to deploy a model. The deployment name defaults to the model name.
 Run the `di-create` workflow, with an optional region, to create
 `di-<workload>ai-<env>-<region>` and `st<workload>di<env><region>` with
